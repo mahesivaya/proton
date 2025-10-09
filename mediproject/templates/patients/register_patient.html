@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <P>Hello {{request.user.username}} {{request.user.id}}</P>
+
+    <P>Register Patients</P>
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        <div class="txt_field">
+            <label>First Name</label>
+            <input type="text" required name="first_name"><br>
+          </div>
+
+          <div class="txt_field">
+            <label>Last Name</label>
+            <input type="text" required name="last_name">
+          </div>
+
+          <div class="txt_field">
+            <label>Email</label>
+            <input type="text" required name="email">
+          </div>
+
+          <div class="txt_field">
+            <label>Phone Number</label>
+            <input type="text" required name="phone_number">
+          </div>
+
+          <div class="txt_field">
+            <label>Address</label>
+            <input type="text" name="address">
+          </div>
+
+          <div class="txt_field">
+            <label>City</label>
+            <input type="text" name="city">
+          </div>
+
+          <div class="txt_field">
+            <label>State</label>
+            <input type="text" name="state">
+          </div>
+
+          <div class="txt_field">
+            <label>Zip Code</label>
+            <input type="text" name="zip_code">
+          </div>
+
+          <div class="txt_field">
+            <label>Country</label>
+            <input type="text" name="country">
+          </div>
+          <div class="txt_field">
+            <label>Profile Picture</label>
+            <input type="file" name="profile_picture" multiple accept="image/*">
+          </div>
+
+        <input class="txt_field" type="submit" value="Submit">
+      </form>
+
+    {% if patient %}
+        <h2>{{ patient.first_name }} {{ patient.last_name }} - Uploaded Images</h2>
+        <ul>
+            {% for img in patient.images.all %}
+                <li>
+                    <img src="{{ img.image.url }}" width="150" alt="{{ patient.first_name }} {{ patient.last_name }}">
+                    <p>Uploaded at: {{ img.uploaded_at|date:"D, d M Y H:i:s" }}</p>
+                </li>
+            {% empty %}
+                <li>No images uploaded yet.</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
