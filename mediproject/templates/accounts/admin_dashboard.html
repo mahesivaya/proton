@@ -1,0 +1,96 @@
+<h2>Admin Dashboard</h2>
+<p>Welcome {{ request.user.username }}!</p>
+
+<br><br>
+<table border="1">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doctor in doctors %}
+        <tr>
+            <td>{{doctor.username}}</td>
+                <button type="button">Details</button>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Doctors List</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Specialization</th>
+    </tr>
+    {% for doctor in doctors %}
+    <tr>
+        <td>{{ doctor.first_name }} {{ doctor.last_name }}</td>
+        <td>{{ doctor.email }}</td>
+        <td>{{ doctor.phone_number }}</td>
+        <td>{{ doctor.specialization }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No doctors available.</td></tr>
+    {% endfor %}
+</table>
+
+<br>
+<button class="btn" onclick="openModal()">Add Doctor</button>
+<br><br>
+<a href="{% url 'admin_dashboard' %}" class="btn">Back to Home</a>
+
+<!-- The Modal -->
+<div id="doctorModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h3>Add New Doctor</h3>
+        <form method="POST" action="{% url 'add_doctor' %}">
+            {% csrf_token %}
+            <label>First Name:</label><br>
+            <input type="text" name="first_name" required><br><br>
+
+            <label>Last Name:</label><br>
+            <input type="text" name="last_name"><br><br>
+
+            <label>Email:</label><br>
+            <input type="email" name="email"><br><br>
+
+            <label>Phone Number:</label><br>
+            <input type="text" name="phone_number"><br><br>
+
+            <label>Specialization:</label><br>
+            <input type="text" name="specialization"><br><br>
+
+            <button type="submit" class="btn">Save</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal() {
+    document.getElementById("doctorModal").style.display = "block";
+}
+function closeModal() {
+    document.getElementById("doctorModal").style.display = "none";
+}
+window.onclick = function(event) {
+    const modal = document.getElementById("doctorModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+<br><br>
+        <br><br>
+<button><a href="{% url 'admin_dashboard' %}">Register Patient</a></button>
+        <br><br>
+        <button><a href="{% url 'register_patient' %}">Register Patient</a></button>
+        <br><br>
+        <button><a href="{% url 'all_patients' %}">All Patients</a></button>
+        <br><br>
+<a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
