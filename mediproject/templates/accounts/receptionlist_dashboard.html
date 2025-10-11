@@ -1,0 +1,6 @@
+<h2>Reception Dashboard</h2>
+<p>Welcome {{ request.user.username }}!</p>
+<br><br>
+        <button><a href="{% url 'register_patient' %}">Register Patient</a></button>
+        <br><br>
+<a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
