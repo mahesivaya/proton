@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Patient, PatientImage
+from .models import Patient, PatientImage, Pharmacy
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'email', 'phone_number', 'city', 'state', 'country', 'uploaded_at')

@@ -49,6 +49,36 @@
     <input type="file" name="profile_picture" multiple accept="image/*"><br><br>
     <input type="submit" value="Upload Images">
 </form>
+<br><br>
+<button><a href="{% url 'add_prescription' patient.id %}">Add Prescription</a></button>
+
+<br><br>
+<h2>Prescriptions</h2>
+{% if pharmacy %}
+    <table border="1">
+        <tr>
+            <th>Medicine Name</th>
+            <th>Quantity</th>
+            <th>Prescribed On</th>
+            <th>Notes</th>
+        </tr>
+        {% for prescription in pharmacy %}
+        <tr>
+            <td>{{ prescription.medicine_name }}</td>
+            <td>{{ prescription.quantity }}</td>
+            <td>{{ prescription.prescribed_on }}</td>
+            <td>{{ prescription.notes }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No prescriptions found for this patient.</p>
+{% endif %}
+
+<br>
+<a href="{% url 'add_prescription' patient.id %}">Add New Prescription</a>
+<br><br
+<button><a href="{% url 'all_patients' %}">Back to Home</a></button>
 </body>
 <br><br>
 

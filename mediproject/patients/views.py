@@ -16,7 +16,12 @@ from .models import Patient, PatientImage
 # from .models import Patient, UploadedFile
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
+from .models import Patient, PatientImage, Pharmacy
+from django.shortcuts import render, get_object_or_404
+from patients.models import Patient
+from django.shortcuts import render, get_object_or_404
 from .models import Patient, PatientImage
+
 
 
 # Create your views here.from django.shortcuts import render, redirect
@@ -72,17 +77,49 @@ def upload_images(request, patient_id):
 
     return redirect('patient_detail', patient_id=patient_id)
 
-
-from django.shortcuts import render, get_object_or_404
-from .models import Patient, PatientImage
-
 def patient_detail(request, patient_id):
     patient = get_object_or_404(Patient, id=patient_id)
     images = PatientImage.objects.filter(patient=patient)
-    return render(request, 'patients/patient_detail.html', {'patient': patient, 'images': images})
+    pharmacy = Pharmacy.objects.all()
+    return render(request, 'patients/patient_detail.html', {'patient': patient, 'images': images, 'pharmacy': pharmacy})
 
 
 def all_patients(request):
     patients = Patient.objects.all()
     context = {'patients': patients}
     return render(request, 'patients/all_patients.html', context)
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Patient, Pharmacy
+
+def add_prescription(request, patient_id):
+    patient = get_object_or_404(Patient, id=patient_id)
+
+    if request.method == 'POST':
+        medicine_name = request.POST.get('medicine_name')
+        quantity = request.POST.get('quantity')
+        notes = request.POST.get('notes')
+
+        if medicine_name and quantity:
+            Pharmacy.objects.create(
+                patient=patient,
+                medicine_name=medicine_name,
+                quantity=int(quantity),
+                notes=notes
+            )
+            messages.success(request, "Prescription added successfully")
+        else:
+            messages.error(request, "Medicine name and quantity are required")
+
+        return redirect('patient_detail', patient_id=patient.id)
+
+    return render(request, 'patients/patient_prescriptions.html', {'patient': patient})
+
+
+@login_required
+def pharmacy_dashboard(request):
+    # pharma = Pharmacy.objects.all()
+    pharma = Pharmacy.objects.select_related('patient').all()
+    return render(request, 'accounts/pharmacy_dashboard.html', {'pharma': pharma})
+

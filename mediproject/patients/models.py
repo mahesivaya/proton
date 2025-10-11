@@ -28,3 +28,12 @@ class PatientImage(models.Model):
 
     def __str__(self):
         return f"{self.patient.name} - {self.image.name}"
+class Pharmacy(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='pharmacies')
+    medicine_name = models.CharField(max_length=255)
+    quantity = models.PositiveIntegerField()
+    prescribed_on = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.medicine_name} for {self.patient.first_name} {self.patient.last_name}"
