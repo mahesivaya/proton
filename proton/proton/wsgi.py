@@ -1,5 +1,5 @@
 """
-WSGI config for mediproject project.
+WSGI config for proton project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mediproject.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proton.settings')
 
 application = get_wsgi_application()

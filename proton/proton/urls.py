@@ -1,5 +1,5 @@
 """
-URL configuration for mediproject project.
+URL configuration for proton project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -16,7 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.shortcuts import render
+
+def home(request):
+    return render(request, 'home.html')
+    
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
 ]
