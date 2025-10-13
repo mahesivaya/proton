@@ -11,21 +11,21 @@ def role_required(allowed_roles=None, redirect_url='login'):
     if allowed_roles is None:
         allowed_roles = []
 
-    def decorator(view_func):
+    def decorator(view_func, unauthorized_view='unauthorized'):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
             # If user is not logged in, redirect
             if not request.user.is_authenticated:
-                return redirect(redirect_url)
+                return redirect(unauthorized_view)
 
             # If user has no role attribute (non-custom user model)
             if not hasattr(request.user, 'role'):
-                raise PermissionDenied("User model has no 'role' attribute")
+                return redirect(unauthorized_view)
 
             # Check role match
             if request.user.role in allowed_roles:
                 return view_func(request, *args, **kwargs)
             else:
-                raise PermissionDenied("You are not authorized to view this page.")
+                return redirect(unauthorized_view)
         return wrapper
     return decorator

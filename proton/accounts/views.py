@@ -8,6 +8,11 @@ from .decorators import role_required
 
 ROLE_REDIRECTS = {
     'admin': 'admin_dashboard',
+    'receptionist': 'reception_dashboard',
+    'doctor': 'doctor_dashboard',
+    'nurse': 'nurse_dashboard',
+    'patient': 'patient_dashboard',
+    'pharmacy': 'pharmacy_dashboard',
 }
 
 def login_view(request):
@@ -36,7 +41,11 @@ def logout_view(request):
     messages.info(request, "You have logged out.")
     return redirect('login')
 
+
 @role_required(allowed_roles=['admin'])
 @login_required
 def admin_dashboard(request):
     return render(request, 'accounts/admin_dashboard.html')
+
+def unauthorized_view(request):
+    return render(request, 'unauthorized.html', status=403)
