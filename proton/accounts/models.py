@@ -1,3 +1,4 @@
+from atexit import register
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
@@ -56,6 +57,7 @@ class Patient(models.Model):
     email = models.EmailField()
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
+    registered_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         managed = True
 

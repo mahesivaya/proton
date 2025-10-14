@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>Patients</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+<body>
+    {% csrf_token %}
+
+    <P>Hello {{request.user.username}} {{request.user.id}}</P> &nbsp;&nbsp;
+    &nbsp;&nbsp;
+    <button><a href="{% url 'logout' %}">Logout</a><br></button>
+    <br>
+    <h2>Patient Details</h2>
+
+
+    Patient ID: {{patient.id}}<br>
+    Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
+    Patient Email: {{patient.email}}<br>
+    Patient Phone Number: {{patient.phone_number}}<br>
+    Patient Address: {{patient.address}}<br>
+
+</body>
+<br><br>
+<button><a href="{% url 'reception_dashboard' %}">Back to Home</a></button>
+
+</body>
+</html>
