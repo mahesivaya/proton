@@ -8,7 +8,7 @@ from .decorators import role_required
 
 ROLE_REDIRECTS = {
     'admin': 'admin_dashboard',
-    'receptionist': 'reception_dashboard',
+    'reception': 'reception_dashboard',
     'doctor': 'doctor_dashboard',
     'nurse': 'nurse_dashboard',
     'patient': 'patient_dashboard',
