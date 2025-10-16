@@ -15,6 +15,14 @@ ROLE_REDIRECTS = {
     'pharmacy': 'pharmacy_dashboard',
 }
 
+def redirect_to_role_home(user):
+    """Redirect user to their role-specific home/dashboard."""
+    redirect_url = ROLE_REDIRECTS.get(user.role)
+    if redirect_url:
+        return redirect(redirect_url)
+    else:
+        return redirect('login')
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -24,12 +32,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             # Redirect based on role
-            redirect_url = ROLE_REDIRECTS.get(user.role)
-            if redirect_url:
-                return redirect(redirect_url)
-            else:
-                messages.error(request, "Role not recognized. Please contact admin.")
-                return redirect('login')
+            return redirect_to_role_home(user)
         else:
             messages.error(request, "Invalid username or password")
 
@@ -49,3 +52,10 @@ def admin_dashboard(request):
 
 def unauthorized_view(request):
     return render(request, 'unauthorized.html', status=403)
+
+@role_required(allowed_roles=['admin', 'reception', 'doctor', 'nurse', 'patient', 'pharmacy'])
+@login_required
+def redirect_to_home(request):
+    """Redirect logged-in users to their dashboard based on role."""
+    user = request.user
+    return redirect_to_role_home(user)

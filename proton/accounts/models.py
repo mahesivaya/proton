@@ -57,12 +57,13 @@ class Patient(models.Model):
     email = models.EmailField()
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
+    visit_reason = models.CharField(max_length=255, default='General Consultation')
     registered_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         managed = True
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} {self.age} {self.email} {self.phone_number} {self.address}"
+        return f"{self.first_name} {self.last_name} {self.age} {self.email} {self.phone_number} {self.address} {self.visit_reason} {self.registered_at} {self.visit_reason}"
 
 
 class Doctor(models.Model):
@@ -91,21 +92,6 @@ class Nurse(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} {self.age} {self.email} {self.phone_number} {self.address}"
-
-
-class Nurse(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    age = models.IntegerField()
-    email = models.EmailField()
-    phone_number = models.IntegerField()
-    address = models.CharField(max_length=255)
-    class Meta:
-        managed = True
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} {self.age} {self.email} {self.phone_number} {self.address}"
-
 
 class Pharmacy(models.Model):
     first_name = models.CharField(max_length=255)

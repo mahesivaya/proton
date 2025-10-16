@@ -1,20 +1,16 @@
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
-    {% load static %}
     <meta charset="utf-8">
-    <title>Patients</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
 <body>
     {% csrf_token %}
-
     <P>Hello {{request.user.username}} {{request.user.id}}</P> &nbsp;&nbsp;
     &nbsp;&nbsp;
-    <button><a href="{% url 'logout' %}">Logout</a><br></button>
     <br>
-    <h2>Patient Details</h2>
+    <p>Patient Details</p>
 
 
     Patient ID: {{patient.id}}<br>
@@ -22,10 +18,37 @@
     Patient Email: {{patient.email}}<br>
     Patient Phone Number: {{patient.phone_number}}<br>
     Patient Address: {{patient.address}}<br>
+    Visit Reason: {{patient.visit_reason}}<br>
+<br><br>
+
+<P>Precescriptions</P>
+<form method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+    <label>
+            <span>Name</span>
+            <input type="text" required name="name"><br>
+    </label>
+    <label>
+        <span>Formula</span>
+        <input type="text" required name="formula">
+    </label>
+      <label>
+        <span>Dose</span>
+        <input type="text" required name="dose">
+    </label>
+      <label>
+        <span>Duration</span>
+        <input type="text" required name="duration">
+
+    <input class="txt_field" type="submit" value="Submit">
+  </form>
+
 
 </body>
 <br><br>
-<button><a href="{% url 'reception_dashboard' %}">Back to Home</a></button>
-
+<a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+<br>
+<button><a href="{% url 'logout' %}">Logout</a><br></button>
 </body>
 </html>

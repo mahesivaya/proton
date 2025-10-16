@@ -17,11 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
-
+from . import views as views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('accounts.urls')),
-    path('reception/', include('reception.urls')),
-    path('doctors/', include('doctors.urls')),
+    path('dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
 ]
