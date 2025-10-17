@@ -2,7 +2,7 @@ from audioop import add
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from accounts.decorators import role_required
-from accounts.models import Patient
+from accounts.models import Patient, PatientRecord
 from django.contrib import messages
 
 # Create your views here.
@@ -38,9 +38,17 @@ def reception_dashboard(request):
 @login_required
 def patient_details(request, patient_id):
     try:
-        patient = Patient.objects.get(id=patient_id)
+        patient = Patient.objects.get(patient_id=patient_id)
+        patient_records = PatientRecord.objects.get(patient_id = patient_id)
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
 
-    return render(request, 'reception/patient_details.html', {'patient': patient})
+    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_records': patient_records})
+
+
+@login_required
+@role_required(allowed_roles=['reception'])
+def patient_records(request, patient_id):
+    patient_records = PatientRecord.objects.get(patient_id = patient_id)
+    return render(request, 'reception/patient_details.html', {'patient_records': patient_records})

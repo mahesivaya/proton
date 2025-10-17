@@ -13,7 +13,7 @@
     <p>Patient Details</p>
 
 
-    Patient ID: {{patient.id}}<br>
+    Patient ID: {{patient.patient_id}}<br>
     Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
     Patient Email: {{patient.email}}<br>
     Patient Phone Number: {{patient.phone_number}}<br>
@@ -21,6 +21,7 @@
     Visit Reason: {{patient.visit_reason}}<br>
 <br><br>
 
+{% if user.role == 'doctor' %}
 <P>Precescriptions</P>
 <form method="POST" enctype="multipart/form-data">
 
@@ -43,8 +44,19 @@
 
     <input class="txt_field" type="submit" value="Submit">
   </form>
+{% endif %}
+<br><br>
+
+{% if user.role == 'doctor'%}
+Patient ID: {{patient.patient_id}}<br>
+Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
+medical history : {{patient_records.medical_history}}<br>
+allergies: {{patient_records.allergies}}<br>
+patient_records: {{patient_records.medications}}<br>
+{% endif %}
 
 
+<br><br>
 </body>
 <br><br>
 <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>

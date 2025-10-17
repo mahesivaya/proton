@@ -74,18 +74,18 @@
             <tbody>
               {% for patient in all_patients %}
                 <tr>
-                  <td>{{ patient.id }}</td>
+                  <td>{{ patient.patient_id }}</td>
                   <td>{{ patient.first_name }}</td>
                   <td>{{ patient.last_name }}</td>
                   <td>{{ patient.age }}</td>
                   <td>{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
                   <td>
-                    <a href="{% url 'patient_details' patient.id %}">
+                    <a href="{% url 'patient_details' patient.patient_id %}">
                     <button type="button">Details</button></a></tr>
                 </tr>
               {% empty %}
                 <tr><td colspan="7">No patients registered yet.</td></tr>
-                <tr class="collapse" id="details/{{ patient.id }}">
+                <tr class="collapse" id="details/{{ patient.patient_id }}">
                     <td colspan="5">
                       <div class="card card-body">
                         <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>

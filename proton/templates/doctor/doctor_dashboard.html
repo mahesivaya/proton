@@ -31,13 +31,13 @@
             <tbody>
               {% for patient in all_patients %}
                 <tr>
-                  <td>{{ patient.id }}</td>
+                  <td>{{ patient.patient_id }}</td>
                   <td>{{ patient.first_name }}</td>
                   <td>{{ patient.last_name }}</td>
                   <td>{{ patient.age }}</td>
                   <td>{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
                   <td>
-                    <a href="{% url 'patient_details' patient.id %}">
+                    <a href="{% url 'patient_details' patient.patient_id %}">
                     <button type="button">Details</button></a></tr>
                 </tr>
               {% empty %}
