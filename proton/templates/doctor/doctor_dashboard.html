@@ -5,59 +5,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
   </head>
 
-<body>
+<body
 <a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
 {% block content %}
 <div class="card mx-auto text-center" style="max-width: 400px;">
     <div class="card-body">
         <h3 class="card-title">Welcome, {{request.user.username}} Reception dashboard!</h3>
-        <br><br>
-        <P>Register Patients</P>
-        <form method="POST" enctype="multipart/form-data">
-
-            {% csrf_token %}
-            <label>
-                    <span>Name</span>
-                    <input type="text" required name="first_name"><br>
-            </label>
-
-            <label>
-                <span>Last Name</span>
-                <input type="text" required name="last_name">
-            </label>
-
-              <label>
-                <span>Age</span>
-                <input type="text" required name="age">
-            </label>
-
-              <label>
-                <span>Email</span>
-                <input type="text" required name="email">
-            </label>
-
-              <label>
-                <span>Phone</span>
-                <input type="text" required name="phone_number">
-            </label>
-
-              <label>
-                <span>Address</span>
-                <input type="text" name="address">
-            </label>
-
-            <label>
-                <span>Visit reason</span>
-                <input type="text" name="visit_reason">
-            </label>
-
-            <input class="txt_field" type="submit" value="Submit">
-          </form>
-
         <br><br>
         <P>Registered Patients</P>
         <table border="1" cellpadding="8" cellspacing="0">
@@ -85,7 +42,7 @@
                 </tr>
               {% empty %}
                 <tr><td colspan="7">No patients registered yet.</td></tr>
-                <tr class="collapse" id="details/{{ patient.patient_id }}">
+                <tr class="collapse" id="details/{{ patient.id }}">
                     <td colspan="5">
                       <div class="card card-body">
                         <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
@@ -96,6 +53,7 @@
               {% endfor %}
             </tbody>
           </table>
+          <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
 
         <br><br>
         <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
@@ -103,3 +61,4 @@
 </div>
 {% endblock %}
 </body>
+</html>
