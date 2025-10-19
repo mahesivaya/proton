@@ -1,4 +1,5 @@
 from atexit import register
+from audioop import add
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
@@ -130,3 +131,13 @@ class PatientRecord(models.Model):
 
     def __str__(self):
         return f'Record for {self.patient.patient_id}'
+
+
+class ScheduleAppointment(models.Model):
+    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
+    appointment_date = models.DateTimeField()
+    reason = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Appointment for {self.patient} on {self.appointment_date}"
