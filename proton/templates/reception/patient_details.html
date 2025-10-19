@@ -13,7 +13,7 @@
     <p>Patient Details</p>
 
 
-    Patient ID: {{patient.patient_id}}<br>
+    Patient ID: {{patient.id}}<br>
     Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
     Patient Email: {{patient.email}}<br>
     Patient Phone Number: {{patient.phone_number}}<br>
@@ -48,7 +48,7 @@
 <br><br>
 
 {% if user.role == 'doctor'%}
-Patient ID: {{patient.patient_id}}<br>
+Patient ID: {{patient.id}}<br>
 Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
 medical history : {{patient_records.medical_history}}<br>
 allergies: {{patient_records.allergies}}<br>

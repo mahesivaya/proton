@@ -39,12 +39,12 @@ def reception_dashboard(request):
 def patient_details(request, patient_id):
     try:
         patient = Patient.objects.get(patient_id=patient_id)
-        patient_records = PatientRecord.objects.get(patient_id = patient_id)
+       # patient_records = PatientRecord.objects.get(patient_id = patient_id)
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
 
-    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_records': patient_records})
+    return render(request, 'reception/patient_details.html', {'patient': patient})
 
 
 @login_required
