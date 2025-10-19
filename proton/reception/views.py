@@ -4,6 +4,9 @@ from django.shortcuts import redirect, render
 from accounts.decorators import role_required
 from accounts.models import Patient, PatientRecord
 from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Q
 
 # Create your views here.
 
@@ -31,7 +34,19 @@ def reception_dashboard(request):
         patient.save()
         return redirect('reception_dashboard')
     all_patients = Patient.objects.all().order_by('-registered_at')
-    return render(request, 'reception/reception_dashboard.html', {'all_patients': all_patients})
+    one_hour_ago = timezone.now() - timedelta(hours=48)
+    recent_patients = Patient.objects.filter(registered_at__gte=one_hour_ago).order_by('-registered_at')
+    query = request.GET.get('q')
+    if query:
+        searchpatients = Patient.objects.filter(
+            Q(patient_id__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(address__icontains=query)
+        )
+    else:
+        searchpatients = Patient.objects.none()
+    return render(request, 'reception/reception_dashboard.html', {'all_patients': all_patients, 'recent_patients':recent_patients, 'searchpatients':searchpatients})
 
 
 @role_required(allowed_roles=['reception', 'doctor'])

@@ -57,7 +57,25 @@
 
             <input class="txt_field" type="submit" value="Submit">
           </form>
-
+	  <br><br>
+        <p>Old patients</p>
+        <br>
+        <form method="get" action="{% url 'reception_dashboard' %}">
+            <input type="text" name="q" placeholder="Search Patient ID" value="{{ request.GET.q }}">
+            <button type="submit">Search</button>
+          </form>
+          
+          {% if all_patients %}
+            <ul>
+              {% for patient in searchpatients %}
+                <li>{{ patient.patient_id }} - {{ patient.first_name }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No patients found.</p>
+          {% endif %}
+          
+        <br><br>
         <br><br>
         <P>Registered Patients</P>
         <table border="1" cellpadding="8" cellspacing="0">
