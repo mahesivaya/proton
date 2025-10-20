@@ -61,7 +61,8 @@ class Patient(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     age = models.IntegerField()
-    email = models.EmailField()
+    sex = models.CharField(max_length=100, default='Not Specified')
+    email = models.EmailField(blank=True, null=True)
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
     visit_reason = models.CharField(max_length=255, default='General Consultation')
@@ -134,7 +135,8 @@ class PatientRecord(models.Model):
 
 
 class ScheduleAppointment(models.Model):
-    patient_id = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE, related_name='appointments')
     appointment_date = models.DateTimeField()
     reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

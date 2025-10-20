@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'proton.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'proton',                          # same as RDS DB name
+        'NAME': 'protondb',                          # same as RDS DB name
         'USER': 'maheshproton',                        # RDS username
         'PASSWORD': 'MaheshG1990',                # RDS password
         'HOST': 'localhost',  # RDS endpoint

@@ -9,9 +9,13 @@ from accounts.models import Patient, PatientRecord, ScheduleAppointment
 @role_required(allowed_roles=['doctor'])
 @login_required
 def doctor_dashboard(request):
-    all_patients = Patient.objects.all().order_by('-registered_at')
-    all_appointments = ScheduleAppointment.objects.all().order_by('-registered_at')
-    return render(request, 'doctor/doctor_dashboard.html', {'all_patients': all_patients, 'all_appointments':all_appointments})
+    # all_patients = Patient.objects.all().order_by('-registered_at')
+    all_appointments = ScheduleAppointment.objects.select_related('patient').all()
+    context = {
+        # 'all_patients': all_patients,
+        'all_appointments': all_appointments,
+    }   
+    return render(request, 'doctor/doctor_dashboard.html', context)
 
 
 @login_required
