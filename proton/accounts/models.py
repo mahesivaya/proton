@@ -125,7 +125,8 @@ class Pharmacy(models.Model):
 
 
 class PatientRecord(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE)
     medical_history = models.TextField()
     allergies = models.TextField()
     medications = models.TextField()
@@ -136,10 +137,20 @@ class PatientRecord(models.Model):
 
 class ScheduleAppointment(models.Model):
     patient = models.ForeignKey(
-        Patient, on_delete=models.CASCADE, related_name='appointments')
+        Patient, on_delete=models.CASCADE)
     appointment_date = models.DateTimeField()
     reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Appointment for {self.patient} on {self.appointment_date}"
+
+
+class PatientMedicine(models.Model):
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE)
+    medicine = models.JSONField() # Stores the entire form as JSON
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"FormData {self.patient} at {self.created_at}"

@@ -2,7 +2,7 @@ from audioop import add
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from accounts.decorators import role_required
-from accounts.models import Patient, PatientRecord, ScheduleAppointment
+from accounts.models import Patient, PatientRecord, ScheduleAppointment, PatientMedicine
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
@@ -62,18 +62,20 @@ def patient_details(request, patient_id):
     try:
         patient = Patient.objects.get(patient_id=patient_id)
         patient_records = PatientRecord.objects.get(patient_id = patient_id)
+        patient_medicine = PatientMedicine.objects.filter(patient_id=patient_id).order_by('-created_at')
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
 
-    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_records': patient_records})
+    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_records': patient_records, 'patient_medicine':patient_medicine})
 
 
 @login_required
-@role_required(allowed_roles=['reception'])
+@role_required(allowed_roles=['reception', 'doctor'])
 def patient_records(request, patient_id):
     patient_records = PatientRecord.objects.get(patient_id = patient_id)
-    return render(request, 'reception/patient_details.html', {'patient_records': patient_records})
+    patient_medicine = patient_medicine(patient_id = patient_id)
+    return render(request, 'reception/patient_details.html', {'patient_records': patient_records,'patient_medicine':patient_medicine})
 
 # --------------------------------------------
 @role_required(allowed_roles=['reception'])
@@ -96,4 +98,4 @@ def schedule_appointment(request, patient_id):
 @login_required
 def appointments(request):
     all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
-    return render(request, 'reception/reception_dashboard.html', {'all_appointments': all_appointments})   
+    return render(request, 'reception/reception_dashboard.html', {'all_appointments': all_appointments})
