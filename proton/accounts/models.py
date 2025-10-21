@@ -1,5 +1,6 @@
 from atexit import register
 from audioop import add
+from enum import unique
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
@@ -76,6 +77,7 @@ class Patient(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
+        unique_together = ('first_name', 'last_name', 'phone_number')
         managed = True
 
     def __str__(self):
@@ -143,6 +145,7 @@ class ScheduleAppointment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        unique_together = ('patient', 'appointment_date')
         return f"Appointment for {self.patient} on {self.appointment_date}"
 
 
