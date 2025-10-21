@@ -21,6 +21,9 @@
     Patient Phone Number: {{patient.phone_number}}<br>
     Patient Address: {{patient.address}}<br>
     Visit Reason: {{patient.visit_reason}}<br>
+    medical history : {{patient_records.medical_history}}<br>
+    allergies: {{patient_records.allergies}}<br>
+    patient_medication: {{patient_records.medications}}<br>
 <br><br>
 
 {% if user.role == 'doctor' %}
@@ -49,14 +52,6 @@
   </form>
 {% endif %}
 <br><br>
-
-{% if user.role == 'doctor'%}
-Patient ID: {{patient.patient_id}}<br>
-Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
-medical history : {{patient_records.medical_history}}<br>
-allergies: {{patient_records.allergies}}<br>
-patient_medication: {{patient_records.medications}}<br>
-{% endif %}
 
 {% if user.role == 'doctor'%}
 <h2>Prescriptions for {{patient.first_name}} {{patient.last_name}}</h2>
