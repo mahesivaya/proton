@@ -63,7 +63,7 @@ patient_medication: {{patient_records.medications}}<br>
 
 {% for prescription in patient_medicine %}
   <div class="prescription">
-    <p><strong>Date:</strong> {{ patient_medicine.created_at }}</p>
+    <p><strong>Date:</strong> {{ prescription.created_at|date:"Y-m-d H:i" }}</p>
     <ul>
       <li><strong>Name:</strong> {{ prescription.medicine.medicinename }}</li>
       <li><strong>Formula:</strong> {{ prescription.medicine.medicineformula }}</li>
