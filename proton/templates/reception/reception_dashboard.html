@@ -68,7 +68,7 @@
           {% if patients %}
             <ul>
               {% for patient in searchpatients %}
-                <li>{{ patient.patient_id }} - {{ patient.first_name }}</li>
+                <li>{{ patient.patient_id }} - {{ patient.first_name }} - {{patient.last_name}}</li>
                 <button><a href="{% url 'schedule_appointment' patient.patient_id %}">Add to appointment</a></button>
               {% endfor %}
             </ul>
