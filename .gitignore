@@ -15,3 +15,5 @@ migrations/
 .DS_Store
 Makefile
 document.rst
+
+medi.pem
