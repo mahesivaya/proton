@@ -13,34 +13,40 @@
     <p>Patient Details</p>
 
 
-    Patient ID: {{patient.id}}<br>
+    Patient ID: {{patient.patient_id}}<br>
     Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
+    Patient Age: {{patient.age}}<br>
+    Patient Sex: {{patient.sex}}<br>
     Patient Email: {{patient.email}}<br>
     Patient Phone Number: {{patient.phone_number}}<br>
     Patient Address: {{patient.address}}<br>
     Visit Reason: {{patient.visit_reason}}<br>
+    medical history : {{patient_records.medical_history}}<br>
+    allergies: {{patient_records.allergies}}<br>
+    patient_medication: {{patient_records.medications}}<br>
 <br><br>
 
 {% if user.role == 'doctor' %}
 <P>Precescriptions</P>
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" id=patientMedicine action="{% url 'patient_medicine' patient.patient_id %}" action="">
 
     {% csrf_token %}
+    
     <label>
             <span>Name</span>
-            <input type="text" required name="name"><br>
+            <input type="text" required name="medicinename"><br>
     </label>
     <label>
         <span>Formula</span>
-        <input type="text" required name="formula">
+        <input type="text" required name="medicineformula">
     </label>
       <label>
         <span>Dose</span>
-        <input type="text" required name="dose">
+        <input type="text" required name="medicinedose">
     </label>
       <label>
         <span>Duration</span>
-        <input type="text" required name="duration">
+        <input type="text" required name="medicineduration">
 
     <input class="txt_field" type="submit" value="Submit">
   </form>
@@ -48,12 +54,22 @@
 <br><br>
 
 {% if user.role == 'doctor'%}
-Patient ID: {{patient.id}}<br>
-Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
-medical history : {{patient_records.medical_history}}<br>
-allergies: {{patient_records.allergies}}<br>
-patient_records: {{patient_records.medications}}<br>
+<h2>Prescriptions for {{patient.first_name}} {{patient.last_name}}</h2>
+
+{% for prescription in patient_medicine %}
+  <div class="prescription">
+    <p><strong>Date:</strong> {{ prescription.created_at|date:"Y-m-d H:i" }}</p>
+      <ul>
+      <li><strong>Name:</strong> {{ prescription.medicine.medicinename }}</li>
+      <li><strong>Formula:</strong> {{ prescription.medicine.medicineformula }}</li>
+      <li><strong>Dose:</strong> {{ prescription.medicine.medicinedose }}</li>
+      <li><strong>Duration:</strong> {{ prescription.medicine.medicineduration }}</li>
+    </ul></div>
+{% empty %}
+  <p>No prescriptions found for this patient.</p>
+{% endfor %}
 {% endif %}
+
 
 
 <br><br>
@@ -64,3 +80,4 @@ patient_records: {{patient_records.medications}}<br>
 <button><a href="{% url 'logout' %}">Logout</a><br></button>
 </body>
 </html>
+

@@ -22,4 +22,5 @@ from . import views as views
 urlpatterns = [
     path('dashboard/', views.reception_dashboard, name='reception_dashboard'),
     path('patient_details/<str:patient_id>/', views.patient_details, name='patient_details'),
-]
+    path('schedule_appointment/<str:patient_id>/', views.schedule_appointment, name='schedule_appointment'),
+    ]

@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5#m)duvr=v$e%1lv9c8i59in9+w4e&f!624hl$&mtho!xk=gvq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['54.226.4.183']
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'reception',
+    'doctors',
 ]
 
 MIDDLEWARE = [
@@ -88,10 +89,10 @@ WSGI_APPLICATION = 'proton.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'protondb',                          # same as RDS DB name
+        'NAME': 'awsprotondb',                          # same as RDS DB name
         'USER': 'postgres',                        # RDS username
         'PASSWORD': 'postgres',                # RDS password
-        'HOST': 'protondb.c12uyc8448br.us-east-1.rds.amazonaws.com',  # RDS endpoint
+        'HOST': 'protoninstance.c12uyc8448br.us-east-1.rds.amazonaws.com',  # RDS endpoint
         'PORT': '5432',
     }
 }
