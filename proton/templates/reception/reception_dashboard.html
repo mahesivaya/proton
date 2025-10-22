@@ -97,13 +97,17 @@
                   <td>{{ patient.first_name }}</td>
                   <td>{{ patient.last_name }}</td>
                   <td>{{ patient.age }}</td>
-                  <td>{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ patient.registered_at|date:"Y-m-d H:i:s T" }}</td>
                   <td>
-                    <a href="{% url 'patient_details' patient.patient_id %}">
-                    <button type="button">Details</button></a>
+                    <form method="POST" action="{% url 'schedule_appointment' patient.patient_id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="appointment_date" value="{{ now|date:'Y-m-d\\TH:i' }}">
+                      <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                  </form>
+                  
                     </td>
                   <td>
-                    <a href="{% url 'schedule_appointment' patient.patient_id %}">
+                    <!-- <a href="{% url 'schedule_appointment' patient.patient_id %}"> -->
                     <button type="button">Add to appointment</button></a>
                     </td>
                     </tr>
@@ -114,7 +118,7 @@
                     <td colspan="5">
                       <div class="card card-body">
                         <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
+                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i:s T" }}</p>
                       </div>
                     </td>
                   </tr>
@@ -142,7 +146,7 @@
             <td colspan="5">
               <div class="card card-body">
                 <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
+                <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i:s T" }}</p>
               </div>
             </td>
           </tr>

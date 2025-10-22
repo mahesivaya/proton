@@ -39,9 +39,9 @@
                   <td>{{ appointment.patient.last_name }}</td>
                   <td>{{ appointment.patient.age }}</td>
                   <td>{{ appointment.patient.sex }}</td>
-                  <td>{{ appointment.patient.registered_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ appointment.patient.registered_at|date:"Y-m-d H:i:s T" }}</td>
                   <td>
-                    <a href="{% url 'patient_details' appointment.patient.patient_id %}">
+                    <a href="{% url 'patient_dashboard' appointment.patient.patient_id %}">
                     <button type="button">Details</button></a></tr>
                 </tr>
               {% empty %}
@@ -50,7 +50,7 @@
                     <td colspan="5">
                       <div class="card card-body">
                         <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
+                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i:s T" }}</p>
                       </div>
                     </td>
                   </tr>

@@ -1,6 +1,9 @@
 from atexit import register
 from audioop import add
 from enum import unique
+from django.db.models import constraints
+from django.utils import timezone  # ✅ This is correct
+
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
@@ -67,7 +70,7 @@ class Patient(models.Model):
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
     visit_reason = models.CharField(max_length=255, default='General Consultation')
-    registered_at = models.DateTimeField(auto_now_add=True)
+    registered_at = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         if not self.patient_id:
@@ -140,20 +143,27 @@ class PatientRecord(models.Model):
 class ScheduleAppointment(models.Model):
     patient = models.ForeignKey(
         Patient, on_delete=models.CASCADE)
-    appointment_date = models.DateTimeField()
+    appointment_date = models.DateTimeField(default=timezone.now)
     reason = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        unique_together = ('patient', 'appointment_date')
         return f"Appointment for {self.patient} on {self.appointment_date}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['patient', 'appointment_date'],
+                name='unique_patient_appointment'
+            )
+        ]
 
 
 class PatientMedicine(models.Model):
     patient = models.ForeignKey(
         Patient, on_delete=models.CASCADE)
     medicine = models.JSONField() # Stores the entire form as JSON
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"FormData {self.patient} at {self.created_at}"

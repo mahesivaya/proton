@@ -9,6 +9,8 @@
     {% csrf_token %}
     <P>Hello {{request.user.username}} {{request.user.id}}</P> &nbsp;&nbsp;
     &nbsp;&nbsp;
+    <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+    <br>
     <br>
     <p>Patient Details</p>
 
@@ -26,9 +28,8 @@
     patient_medication: {{patient_records.medications}}<br>
 <br><br>
 
-{% if user.role == 'doctor' %}
 <P>Precescriptions</P>
-<form method="POST" enctype="multipart/form-data" id=patientMedicine action="{% url 'patient_dashboard' patient.patient_id %}">
+<form method="POST" enctype="multipart/form-data" id=patientMedicine>
 
     {% csrf_token %}
     
@@ -50,7 +51,6 @@
 
     <input class="txt_field" type="submit" value="Submit">
   </form>
-{% endif %}
 <br><br>
 
 {% if user.role == 'doctor'%}
@@ -70,7 +70,6 @@
   <p>No prescriptions found for this patient.</p>
 {% endfor %}
 {% endif %}
-
 
 
 <br><br>
