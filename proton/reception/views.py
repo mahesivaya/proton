@@ -2,7 +2,7 @@ from audioop import add
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from accounts.decorators import role_required
-from accounts.models import Patient, PatientRecord, ScheduleAppointment, PatientMedicine
+from accounts.models import Patient, ScheduleAppointment, PatientMedicine
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
