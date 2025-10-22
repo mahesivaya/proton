@@ -82,16 +82,32 @@ def patient_records(request, patient_id):
 @login_required
 @csrf_exempt
 def schedule_appointment(request, patient_id):
-    patient = Patient.objects.get(patient_id=patient_id)
-    reason = Patient.objects.get(patient_id=patient_id).visit_reason
-    appointment_date = timezone.now()
+    patient = get_object_or_404(Patient, patient_id=patient_id)
 
+    # Optional: get the reason from patient object
+    reason = patient.visit_reason if hasattr(patient, 'visit_reason') else ''
+
+    # Prevent duplicate appointment for the same day
+    today = timezone.now().date()
+    exists = ScheduleAppointment.objects.filter(
+        patient=patient,
+        appointment_date__date=today
+    ).exists()
+
+    if exists:
+        messages.warning(request, "This patient already has an appointment today.")
+        return redirect('reception_dashboard')
+
+    # Create the appointment
     ScheduleAppointment.objects.create(
         patient=patient,
-        appointment_date=appointment_date,
+        appointment_date=timezone.now(),
         reason=reason
     )
+
+    messages.success(request, "Appointment scheduled successfully.")
     return redirect('reception_dashboard')
+
 
 
 @role_required(allowed_roles=['reception'])
