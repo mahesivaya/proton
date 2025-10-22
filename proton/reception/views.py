@@ -21,6 +21,7 @@ def reception_dashboard(request):
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
         age = request.POST.get("age")
+        gender = request.POST.get("gender")
         email = request.POST.get("email")
         phone_number = request.POST.get("phone_number")
         address = request.POST.get("address")
@@ -29,6 +30,7 @@ def reception_dashboard(request):
             first_name=first_name,
             last_name=last_name,
             age=age,
+            gender=gender,
             email=email,
             phone_number=phone_number,
             address=address,
