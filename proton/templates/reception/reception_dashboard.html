@@ -14,7 +14,7 @@
 {% block content %}
 <div class="card mx-auto text-center" style="max-width: 400px;">
     <div class="card-body">
-        <h3 class="card-title">Welcome, {{request.user.username}} Reception dashboard!</h3>
+        <h3 class="card-title">Welcome, {{request.user.username}}!</h3>
         <br><br>
         <P>Register New Patients</P>
         <form method="POST" enctype="multipart/form-data">
@@ -56,26 +56,25 @@
             
             <input class="txt_field" type="submit" value="Submit">
           </form>
-        <br><br>
-
+	  <br><br>
         <p>Old patients</p>
         <br>
         <form method="get" action="{% url 'reception_dashboard' %}">
             <input type="text" name="q" placeholder="Search Patient ID" value="{{ request.GET.q }}">
             <button type="submit">Search</button>
-        </form>
+          </form>
           
-          {% if patients %}
+          {% if all_patients %}
             <ul>
               {% for patient in searchpatients %}
-                <li>{{ patient.patient_id }} - {{ patient.first_name }} - {{patient.last_name}}</li>
-                <button><a href="{% url 'schedule_appointment' patient.patient_id %}">Add to appointment</a></button>
+                <li>{{ patient.patient_id }} - {{ patient.first_name }}</li>
               {% endfor %}
             </ul>
           {% else %}
             <p>No patients found.</p>
           {% endif %}
           
+        <br><br>
         <br><br>
         <P>Registered Patients</P>
         <table border="1" cellpadding="8" cellspacing="0">

@@ -8,8 +8,6 @@ from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 
@@ -39,11 +37,8 @@ def reception_dashboard(request):
         # patient_record = PatientRecord.objects.create(
 
         return redirect('reception_dashboard')
-    # For all Patients 
-    patients = Patient.objects.all().order_by('-registered_at')
-    all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
-    # For Patients registered in the last 1 hour
-    one_hour_ago = timezone.now() - timedelta(hours=1)
+    all_patients = Patient.objects.all().order_by('-registered_at')
+    one_hour_ago = timezone.now() - timedelta(hours=48)
     recent_patients = Patient.objects.filter(registered_at__gte=one_hour_ago).order_by('-registered_at')
     query = request.GET.get('q')
     if query:
@@ -55,8 +50,7 @@ def reception_dashboard(request):
         )
     else:
         searchpatients = Patient.objects.none()
-
-    return render(request, 'reception/reception_dashboard.html', {'patients': patients, 'recent_patients': recent_patients, 'searchpatients': searchpatients, 'all_appointments': all_appointments})
+    return render(request, 'reception/reception_dashboard.html', {'all_patients': all_patients, 'recent_patients':recent_patients, 'searchpatients':searchpatients})
 
 
 @role_required(allowed_roles=['reception', 'doctor'])
@@ -64,62 +58,16 @@ def reception_dashboard(request):
 def patient_details(request, patient_id):
     try:
         patient = Patient.objects.get(patient_id=patient_id)
-        # patient_records = PatientRecord.objects.get(patient_id = patient_id)
-        patient_medicine = PatientMedicine.objects.filter(patient_id=patient_id).order_by('-created_at')
+       # patient_records = PatientRecord.objects.get(patient_id = patient_id)
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
 
-    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_medicine':patient_medicine})
+    return render(request, 'reception/patient_details.html', {'patient': patient})
 
 
 @login_required
 @role_required(allowed_roles=['doctor'])
 def patient_records(request, patient_id):
-    # patient_records = PatientRecord.objects.get(patient_id = patient_id)
-    patient_medicine = patient_medicine(patient_id = patient_id)
-    return render(request, 'reception/patient_details.html', {'patient_medicine':patient_medicine})
-
-# --------------------------------------------
-@role_required(allowed_roles=['reception'])
-@login_required
-@csrf_exempt
-def schedule_appointment(request, patient_id):
-    patient = get_object_or_404(Patient, patient_id=patient_id)
-
-    # Optional: get the reason from patient object
-    reason = patient.visit_reason if hasattr(patient, 'visit_reason') else ''
-
-    # Prevent duplicate appointment for the same day
-    today = timezone.now().date()
-    exists = ScheduleAppointment.objects.filter(
-        patient=patient,
-        appointment_date__date=today
-    ).exists()
-
-    if exists:
-        messages.warning(request, "This patient already has an appointment today.")
-        return redirect('reception_dashboard')
-
-    # Create the appointment
-    ScheduleAppointment.objects.create(
-        patient=patient,
-        appointment_date=timezone.now(),
-        reason=reason
-    )
-
-    messages.success(request, "Appointment scheduled successfully.")
-    return redirect('reception_dashboard')
-
-
-@role_required(allowed_roles=['reception'])
-@login_required
-def appointments(request):
-    all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
-    return render(request, 'reception/reception_dashboard.html', {'all_appointments': all_appointments})
-
-# @role_required(allowed_roles=['doctor'])
-# @login_required
-# def patient_dashboard(request):
-#     patient_med_dashboard = PatientMedicine.objects.all().order_by('-created_at')
-#     return render(request, 'doctor/patient_dashboard.html', {'patient_med_dashboard': patient_med_dashboard})
+    patient_records = PatientRecord.objects.get(patient_id = patient_id)
+    return render(request, 'reception/patient_details.html', {'patient_records': patient_records})
