@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+<body
+<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
+{% block content %}
+<div class="card mx-auto text-center" style="max-width: 400px;">
+    <div class="card-body">
+        <h3 class="card-title">Welcome, {{request.user.username}} Reception dashboard!</h3>
+        <br><br>
+        <P>Pharmacy Dashboard</P>
+          <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+        <br><br>
+        <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

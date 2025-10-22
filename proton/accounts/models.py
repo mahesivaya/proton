@@ -1,4 +1,9 @@
 from atexit import register
+from audioop import add
+from enum import unique
+from django.db.models import constraints
+from django.utils import timezone  # ✅ This is correct
+
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
@@ -60,11 +65,12 @@ class Patient(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     age = models.IntegerField()
-    email = models.EmailField()
+    sex = models.CharField(max_length=100, default='Not Specified')
+    email = models.EmailField(blank=True, null=True)
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
     visit_reason = models.CharField(max_length=255, default='General Consultation')
-    registered_at = models.DateTimeField(auto_now_add=True)
+    registered_at = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         if not self.patient_id:
@@ -74,6 +80,7 @@ class Patient(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
+        unique_together = ('first_name', 'last_name', 'phone_number')
         managed = True
 
     def __str__(self):
@@ -123,10 +130,40 @@ class Pharmacy(models.Model):
 
 
 class PatientRecord(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE)
     medical_history = models.TextField()
     allergies = models.TextField()
     medications = models.TextField()
 
     def __str__(self):
         return f'Record for {self.patient.patient_id}'
+
+
+class ScheduleAppointment(models.Model):
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE)
+    appointment_date = models.DateTimeField(default=timezone.now)
+    reason = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Appointment for {self.patient} on {self.appointment_date}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['patient', 'appointment_date'],
+                name='unique_patient_appointment'
+            )
+        ]
+
+
+class PatientMedicine(models.Model):
+    patient = models.ForeignKey(
+        Patient, on_delete=models.CASCADE)
+    medicine = models.JSONField() # Stores the entire form as JSON
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"FormData {self.patient} at {self.created_at}"

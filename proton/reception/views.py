@@ -1,8 +1,9 @@
 from audioop import add
+from math import e
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from accounts.decorators import role_required
-from accounts.models import Patient, PatientRecord
+from accounts.models import Patient, PatientRecord, ScheduleAppointment, PatientMedicine
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
@@ -13,6 +14,7 @@ from django.db.models import Q
 
 @role_required(allowed_roles=['reception'])
 @login_required
+@csrf_exempt
 def reception_dashboard(request):
     if request.method == 'POST':
         first_name = request.POST.get("first_name")
@@ -32,6 +34,8 @@ def reception_dashboard(request):
             visit_reason=visit_reason)
         messages.success(request, "Patient registered successfully")
         patient.save()
+        # patient_record = PatientRecord.objects.create(
+
         return redirect('reception_dashboard')
     all_patients = Patient.objects.all().order_by('-registered_at')
     one_hour_ago = timezone.now() - timedelta(hours=48)
@@ -63,7 +67,7 @@ def patient_details(request, patient_id):
 
 
 @login_required
-@role_required(allowed_roles=['reception'])
+@role_required(allowed_roles=['doctor'])
 def patient_records(request, patient_id):
     patient_records = PatientRecord.objects.get(patient_id = patient_id)
     return render(request, 'reception/patient_details.html', {'patient_records': patient_records})

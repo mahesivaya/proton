@@ -9,11 +9,13 @@
     {% csrf_token %}
     <P>Hello {{request.user.username}} {{request.user.id}}</P> &nbsp;&nbsp;
     &nbsp;&nbsp;
+    <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+    <br>
     <br>
     <p>Patient Details</p>
 
 
-    Patient ID: {{patient.id}}<br>
+    Patient ID: {{patient.patient_id}}<br>
     Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
     Patient Age: {{patient.age}}<br>
     Patient Sex: {{patient.sex}}<br>
@@ -26,9 +28,8 @@
     patient_medication: {{patient_records.medications}}<br>
 <br><br>
 
-{% if user.role == 'doctor' %}
 <P>Precescriptions</P>
-<form method="POST" enctype="multipart/form-data" id=patientMedicine action="{% url 'patient_dashboard' patient.patient_id %}">
+<form method="POST" enctype="multipart/form-data" id=patientMedicine>
 
     {% csrf_token %}
     
@@ -50,17 +51,25 @@
 
     <input class="txt_field" type="submit" value="Submit">
   </form>
-{% endif %}
 <br><br>
 
 {% if user.role == 'doctor'%}
-Patient ID: {{patient.id}}<br>
-Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
-medical history : {{patient_records.medical_history}}<br>
-allergies: {{patient_records.allergies}}<br>
-patient_records: {{patient_records.medications}}<br>
-{% endif %}
+<h2>Prescriptions for {{patient.first_name}} {{patient.last_name}}</h2>
 
+{% for prescription in patient_medicine %}
+  <div class="prescription">
+    <p><strong>Date:</strong> {{ prescription.created_at|date:"Y-m-d H:i:s T" }}</p>
+    <ul>
+      <li><strong>Name:</strong> {{ prescription.medicine.medicinename }}</li>
+      <li><strong>Formula:</strong> {{ prescription.medicine.medicineformula }}</li>
+      <li><strong>Dose:</strong> {{ prescription.medicine.medicinedose }}</li>
+      <li><strong>Duration:</strong> {{ prescription.medicine.medicineduration }}</li>
+    </ul>
+  </div>
+{% empty %}
+  <p>No prescriptions found for this patient.</p>
+{% endfor %}
+{% endif %}
 
 
 <br><br>

@@ -16,45 +16,44 @@
     <div class="card-body">
         <h3 class="card-title">Welcome, {{request.user.username}}!</h3>
         <br><br>
-        <P>Register Patients</P>
+        <P>Register New Patients</P>
         <form method="POST" enctype="multipart/form-data">
 
             {% csrf_token %}
             <label>
-                    <span>Name</span>
-                    <input type="text" required name="first_name"><br>
+                <span>Name</span>
+                <input type="text" required name="first_name"><br>
             </label>
-
             <label>
                 <span>Last Name</span>
                 <input type="text" required name="last_name">
             </label>
-
-              <label>
+            <label>
                 <span>Age</span>
                 <input type="text" required name="age">
             </label>
-
+            <label>
               <label>
+                <span>Sex</span>
+                <input type="text" required name="sex">
+            </label>
+            <label>
                 <span>Email</span>
                 <input type="text" required name="email">
             </label>
-
-              <label>
+            <label>
                 <span>Phone</span>
                 <input type="text" required name="phone_number">
             </label>
-
-              <label>
+            <label>
                 <span>Address</span>
                 <input type="text" name="address">
             </label>
-
             <label>
                 <span>Visit reason</span>
                 <input type="text" name="visit_reason">
             </label>
-
+            
             <input class="txt_field" type="submit" value="Submit">
           </form>
 	  <br><br>
@@ -87,19 +86,30 @@
                 <th>age</th>
                 <th>Registered On</th>
                 <th>More Details</th>
+                <th>Add to Appointment</th>
               </tr>
             </thead>
             <tbody>
-              {% for patient in all_patients %}
+              {% for patient in patients %}
                 <tr>
                   <td>{{ patient.patient_id }}</td>
                   <td>{{ patient.first_name }}</td>
                   <td>{{ patient.last_name }}</td>
                   <td>{{ patient.age }}</td>
-                  <td>{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ patient.registered_at|date:"Y-m-d H:i:s T" }}</td>
                   <td>
-                    <a href="{% url 'patient_details' patient.patient_id %}">
-                    <button type="button">Details</button></a></tr>
+                    <form method="POST" action="{% url 'schedule_appointment' patient.patient_id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="appointment_date" value="{{ now|date:'Y-m-d\\TH:i' }}">
+                      <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                  </form>
+                  
+                    </td>
+                  <td>
+                    <!-- <a href="{% url 'schedule_appointment' patient.patient_id %}"> -->
+                    <button type="button">Add to appointment</button></a>
+                    </td>
+                    </tr>
                 </tr>
               {% empty %}
                 <tr><td colspan="7">No patients registered yet.</td></tr>
@@ -107,14 +117,44 @@
                     <td colspan="5">
                       <div class="card card-body">
                         <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
+                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i:s T" }}</p>
                       </div>
                     </td>
                   </tr>
               {% endfor %}
             </tbody>
           </table>
+<br><br>
+<P>Appointments Scheduled</P>
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Patient ID</th>
+        <th>DateTime</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appointment in all_appointments %}
+        <tr>
+          <td>{{appointment.patient.patient_id}}</td>
+          <td>{{appointment.appointment_date}}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7">No patients registered yet.</td></tr>
+        <tr class="collapse" id="details/{{ patient.patient_id }}">
+            <td colspan="5">
+              <div class="card card-body">
+                <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
+                <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i:s T" }}</p>
+              </div>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<br><br>
 
+          <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
         <br><br>
         <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
     </div>

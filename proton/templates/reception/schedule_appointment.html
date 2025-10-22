@@ -1,0 +1,23 @@
+<!-- templates/appointments/schedule_form.html -->
+
+<h2>Schedule Appointment</h2>
+
+<form method="post">
+  {% csrf_token %}
+
+  {% if patient %}
+    <p>Patient: <strong>{{ patient.first_name }} {{ patient.last_name }}</strong> (ID: {{ patient.patient_id }})</p>
+    <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+  {% else %}
+    <label>Patient ID:</label><br>
+    <input type="text" name="patient_id" required><br><br>
+  {% endif %}
+
+  <label>Appointment Date & Time:</label><br>
+  <input type="datetime-local" name="appointment_date" required><br><br>
+
+  <label>Reason:</label><br>
+  <textarea name="reason" rows="4" cols="50"></textarea><br><br>
+
+  <button type="submit">Schedule Appointment</button>
+</form>
