@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-5#m)duvr=v$e%1lv9c8i59in9+w4e&f!624hl$&mtho!xk=gvq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.226.4.183']
+ALLOWED_HOSTS = ['avariadic.com', 'www.avariadic.com']
 
 # Application definition
 
@@ -51,6 +51,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://avariadic.com',
+    'https://avariadic.com',
 ]
 
 ROOT_URLCONF = 'proton.urls'
