@@ -13,9 +13,9 @@ from accounts.decorators import role_required
 
 
 
-# @role_required(allowed_roles=['admin'])
-# @login_required
-def executive_dashboard(request):
+@role_required(allowed_roles=['admin'])
+@login_required
+def admin_dashboard(request):
     # All patients
     patients = Patient.objects.all().order_by('-registered_at')
     

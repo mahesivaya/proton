@@ -4,5 +4,5 @@ from django.shortcuts import render
 from . import views
 
 urlpatterns = [
-    path('executive_dashboard/', views.executive_dashboard, name='executive_dashboard'),
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
 ]

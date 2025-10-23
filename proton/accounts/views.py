@@ -48,7 +48,7 @@ def logout_view(request):
 @role_required(allowed_roles=['admin'])
 @login_required
 def admin_dashboard(request):
-    return render(request, 'accounts/admin_dashboard.html')
+    return render(request, 'executive/executive.html')
 
 def unauthorized_view(request):
     return render(request, 'unauthorized.html', status=403)
