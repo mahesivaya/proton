@@ -30,3 +30,4 @@ staticfiles/
 env*
 .vscode/
 *.log
+*rst

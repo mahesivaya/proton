@@ -9,7 +9,9 @@
   </head>
 
   <body>
-    <h2>Login</h2>
+    <div class="container">
+    <div class="right">
+      <h2>Login</h2>
       <form method="post">
           {% csrf_token %}
           <label>Username:
@@ -28,6 +30,12 @@
       {% endfor %}
     </ul>
   {% endif %}
-  </body>
+</div>
+  <div class="left">
+  <img src="{% static 'images/aura_logo.jpeg' %}" alt="Paris" width="300" height="300">
+  </div>
+</div>
+
+</body>
 </html>
 
