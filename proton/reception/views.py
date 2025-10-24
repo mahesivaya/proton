@@ -40,10 +40,11 @@ def reception_dashboard(request):
         return redirect('reception_dashboard')
     # For all Patients 
     patients = Patient.objects.all().order_by('-registered_at')
-    all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
+    #all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
     # For Patients registered in the last 1 hour
-    one_hour_ago = timezone.now() - timedelta(hours=1)
-    recent_patients = Patient.objects.filter(registered_at__gte=one_hour_ago).order_by('-registered_at')
+    one_day_ago = timezone.now() - timedelta(hours=24)
+    all_appointments = ScheduleAppointment.objects.filter(appointment_date__gte=one_day_ago).order_by('-appointment_date')
+    recent_patients = Patient.objects.filter(registered_at__gte=one_day_ago).order_by('-registered_at')
     query = request.GET.get('q')
     if query:
         searchpatients = Patient.objects.filter(
