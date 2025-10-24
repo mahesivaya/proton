@@ -32,7 +32,7 @@ def admin_dashboard(request):
         .annotate(registration_date=TruncDate('registered_at'))
         .values('registration_date')
         .annotate(total_patients=Count('patient_id'))
-        .order_by('registration_date')
+        .order_by('-registration_date')
     )
 
     context = {
