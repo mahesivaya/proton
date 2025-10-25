@@ -16,6 +16,8 @@ from datetime import datetime, date, time
 import calendar
 from django.db.models.functions import ExtractYear, ExtractMonth
 from collections import defaultdict
+import calendar, json
+
 
 
 
@@ -90,10 +92,29 @@ def monthly_patients(request, year, month):
     except Exception:
         patients = Patient.objects.none()
 
+    monthly_data = (
+        Patient.objects
+        .annotate(year=ExtractYear('registered_at'), month=ExtractMonth('registered_at'))
+        .values('year', 'month')
+        .annotate(total=Count('patient_id'))
+        .order_by('year', 'month')
+    )
+
+    # Prepare labels and values for the chart
+    labels = []
+    values = []
+    for row in monthly_data:
+        label = f"{calendar.month_name[row['month']]} {row['year']}"
+        labels.append(label)
+        values.append(row['total'])
+
     context = {
         'patients': patients,
         'year': year,
         'month': month,
+        'labels': json.dumps(labels),
+        'values': json.dumps(values),
+
     }
     return render(request, 'executive/monthly_patients.html', context)
 

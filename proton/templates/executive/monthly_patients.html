@@ -2,8 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body {
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      text-align: center;
+      padding: 40px;
+    }
+    .chart-container {
+      width: 80%;
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
         form { margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
@@ -24,7 +42,10 @@
         </label>
         <button type="submit">Filter</button>
     </form>
-
+    <div class="chart-container">
+        <h2>Patient Registrations Per Month</h2>
+        <canvas id="patientChart"></canvas>
+      </div>
 {% if patients %}
         <h2>Patients for {{ year }}-{{ month|stringformat:"02d" }}</h2>
         <table>
@@ -50,5 +71,40 @@
     {% elif year and month %}
         <p>No patients found for {{ year }}-{{ month|stringformat:"02d" }}.</p>
     {% endif %}
+
+    <script>
+        const labels = {{ labels|safe }};
+        const data = {{ values|safe }};
+    
+        const ctx = document.getElementById('patientChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Patients Registered',
+              data: data,
+              borderWidth: 1,
+              backgroundColor: 'rgba(75, 192, 192, 0.5)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true, position: 'top' },
+              title: {
+                display: true,
+                text: 'Monthly Patient Registrations',
+                font: { size: 18 }
+              }
+            },
+            scales: {
+              y: { beginAtZero: true, title: { display: true, text: 'Patients' } },
+              x: { title: { display: true, text: 'Month' } }
+            }
+          }
+        });
+      </script>
 </body>
 </html>
