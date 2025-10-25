@@ -6,7 +6,50 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
 <body>
-<h3>Patients Registered Per Day</h3>
+<h4>Patients by Year 2025</h4>
+<a href="{% url 'yearly_patients' year=2025 %}">2025 Year Patients</a>
+<br><br>
+<h4>Patients by Year & Month</h4>
+{% for year, months in years_months.items %}
+  <h3>{{ year }}</h3>
+  <ul>
+    {% for m in months %}
+      <li>
+        <a href="{% url 'monthly_patients' year=year month=m.month %}">
+          {{ m.month_name }} {{ year }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endfor %}
+
+<br><br><br>
+<h2>Patient Registrations by Month</h2>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Year</th>
+    <th>Month</th>
+    <th>Registrations</th>
+  </tr>
+
+  {% for row in monthly_data %}
+    <tr>
+      <td>{{ row.year }}</td>
+      <td>
+        <a href="{% url 'monthly_patients' year=row.year month=row.month %}">
+          {{ row.month_name }}
+        </a>
+      </td>
+      <td>{{ row.total }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="3">No patient data available.</td></tr>
+  {% endfor %}
+</table>
+
+<br><br>
+<!-- <h3>Patients Registered Per Day</h3>
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
         <tr>
@@ -26,7 +69,7 @@
         </tr>
         {% endfor %}
     </tbody>
-</table>
+</table> -->
 </body>
 <br><br>
 <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>

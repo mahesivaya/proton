@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        form { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f5f5f5; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+    <form method="POST" action="{% url 'patient_filter_form' %}">
+        {% csrf_token %}
+        <label>
+            Year:
+            <input type="number" name="year" min="2024" max="2100" required>
+        </label>
+        <label>
+            Month:
+            <input type="number" name="month" min="1" max="12" required>
+        </label>
+        <button type="submit">Filter</button>
+    </form>
+
+{% if patients %}
+        <h2>Patients for {{ year }}-{{ month|stringformat:"02d" }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Registered At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td>{{ p.patient_id }}</td>
+                    <td>{{ p.first_name }} {{ p.last_name }}</td>
+                    <td>{{ p.registered_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif year and month %}
+        <p>No patients found for {{ year }}-{{ month|stringformat:"02d" }}.</p>
+    {% endif %}
+</body>
+</html>
