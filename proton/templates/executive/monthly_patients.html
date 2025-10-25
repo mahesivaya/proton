@@ -33,6 +33,7 @@
                     <th>Patient ID</th>
                     <th>Name</th>
                     <th>Registered At</th>
+                    <th>Fee Paid</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +42,7 @@
                     <td>{{ p.patient_id }}</td>
                     <td>{{ p.first_name }} {{ p.last_name }}</td>
                     <td>{{ p.registered_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ p.fee }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -4,14 +4,17 @@ from accounts.decorators import role_required
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from accounts.models import Patient, PatientRecord, ScheduleAppointment, PatientMedicine
-
+from datetime import timedelta
+from django.utils import timezone
 # Create your views here.
 
 @role_required(allowed_roles=['doctor'])
 @login_required
 def doctor_dashboard(request):
     # all_patients = Patient.objects.all().order_by('-registered_at')
-    all_appointments = ScheduleAppointment.objects.select_related('patient').all()
+    # all_appointments = ScheduleAppointment.objects.select_related('patient').all()
+    one_day_ago = timezone.now() - timedelta(hours=24)
+    all_appointments = ScheduleAppointment.objects.filter(appointment_date__gte=one_day_ago).order_by('-appointment_date')
     context = {
         # 'all_patients': all_patients,
         'all_appointments': all_appointments,
