@@ -1,4 +1,5 @@
 from audioop import add
+import re
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from accounts.decorators import role_required
@@ -26,6 +27,8 @@ def reception_dashboard(request):
         phone_number = request.POST.get("phone_number")
         address = request.POST.get("address")
         visit_reason = request.POST.get("visit_reason")
+        referral = request.POST.get("referral")
+        fee = request.POST.get("fee")
         patient = Patient.objects.create(
             first_name=first_name,
             last_name=last_name,
@@ -34,7 +37,9 @@ def reception_dashboard(request):
             email=email,
             phone_number=phone_number,
             address=address,
-            visit_reason=visit_reason)
+            visit_reason=visit_reason,
+            referral=referral,
+            fee=fee)
         messages.success(request, "Patient registered successfully")
         patient.save()
         return redirect('reception_dashboard')
@@ -45,6 +50,7 @@ def reception_dashboard(request):
     one_day_ago = timezone.now() - timedelta(hours=24)
     all_appointments = ScheduleAppointment.objects.filter(appointment_date__gte=one_day_ago).order_by('-appointment_date')
     recent_patients = Patient.objects.filter(registered_at__gte=one_day_ago).order_by('-registered_at')
+    have_appointments = ScheduleAppointment.objects.values_list('patient_id', flat=True)
     query = request.GET.get('q')
     if query:
         searchpatients = Patient.objects.filter(
@@ -56,7 +62,7 @@ def reception_dashboard(request):
     else:
         searchpatients = Patient.objects.none()
 
-    return render(request, 'reception/reception_dashboard.html', {'patients': patients, 'recent_patients': recent_patients, 'searchpatients': searchpatients, 'all_appointments': all_appointments})
+    return render(request, 'reception/reception_dashboard.html', {'patients': patients, 'recent_patients': recent_patients, 'searchpatients': searchpatients, 'all_appointments': all_appointments, 'have_appointments': list(have_appointments)})
 
 
 @role_required(allowed_roles=['reception', 'doctor'])

@@ -1,6 +1,7 @@
 from atexit import register
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.forms import IntegerField
 from django.utils import timezone
 
 class CustomUser(AbstractUser):
@@ -66,6 +67,8 @@ class Patient(models.Model):
     phone_number = models.IntegerField()
     address = models.CharField(max_length=255)
     visit_reason = models.CharField(max_length=255, default='General Consultation')
+    referral = models.CharField(max_length=255)
+    fee = models.IntegerField()
     registered_at = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
