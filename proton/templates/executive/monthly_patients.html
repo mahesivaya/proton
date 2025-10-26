@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
+
+    body {
       font-family: Arial, sans-serif;
       background: #f6f7fb;
       text-align: center;
@@ -26,85 +26,146 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #f5f5f5; }
+    }
     </style>
 </head>
 <body>
     <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
-    <form method="POST" action="{% url 'patient_filter_form' %}">
-        {% csrf_token %}
-        <label>
-            Year:
-            <input type="number" name="year" min="2024" max="2100" required>
-        </label>
-        <label>
-            Month:
-            <input type="number" name="month" min="1" max="12" required>
-        </label>
-        <button type="submit">Filter</button>
-    </form>
-    <div class="chart-container">
-        <h2>Patient Registrations Per Month</h2>
-        <canvas id="patientChart"></canvas>
-      </div>
-{% if patients %}
-        <h2>Patients for {{ year }}-{{ month|stringformat:"02d" }}</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Patient ID</th>
-                    <th>Name</th>
-                    <th>Registered At</th>
-                    <th>Fee Paid</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in patients %}
-                <tr>
-                    <td>{{ p.patient_id }}</td>
-                    <td>{{ p.first_name }} {{ p.last_name }}</td>
-                    <td>{{ p.registered_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ p.fee }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% elif year and month %}
-        <p>No patients found for {{ year }}-{{ month|stringformat:"02d" }}.</p>
-    {% endif %}
 
-    <script>
-        const labels = {{ labels|safe }};
-        const data = {{ values|safe }};
+    <h2>Patients Registered Per Day in {{ month_name }} {{ year }}</h2>
+
+    <canvas id="dailyChart" width="400" height="200"></canvas>
     
-        const ctx = document.getElementById('patientChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Patients Registered',
-              data: data,
-              borderWidth: 1,
-              backgroundColor: 'rgba(75, 192, 192, 0.5)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-            }]
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+      const labels = {{ labels|safe }};
+      const data = {{ values|safe }};
+    
+      const ctx = document.getElementById('dailyChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Patients Registered',
+            data: data,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Patients per Day - {{ month_name }} {{ year }}'
+            }
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: true, position: 'top' },
-              title: {
-                display: true,
-                text: 'Monthly Patient Registrations',
-                font: { size: 18 }
-              }
+          scales: {
+            x: {
+              title: { display: true, text: 'Day of Month' },
+              ticks: { stepSize: 1 }
             },
-            scales: {
-              y: { beginAtZero: true, title: { display: true, text: 'Patients' } },
-              x: { title: { display: true, text: 'Month' } }
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Number of Patients' }
             }
           }
-        });
-      </script>
+        }
+      });
+    </script>
+    
+
+    <style>
+        /* ===== Table with Borders on Rows and Columns ===== */
+        .table-container {
+          width: 95%;
+          margin: 20px auto;
+          font-family: "Segoe UI", Roboto, Arial, sans-serif;
+          background: #ffffff;
+          border: 1px solid #d1d5db; /* Outer border */
+          border-radius: 8px;
+          overflow-x: auto;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .table-container h2 {
+          text-align: center;
+          margin: 15px 0;
+          color: #1f2937;
+        }
+        
+        .table-bordered {
+          width: 100%;
+          border-collapse: collapse; /* ensures clean, merged borders */
+        }
+        
+        .table-bordered th,
+        .table-bordered td {
+          border: 1px solid #cbd5e1; /* visible border for all rows/columns */
+          padding: 10px 14px;
+          text-align: left;
+          font-size: 14px;
+        }
+        
+        .table-bordered thead {
+          background: #2563eb; /* blue header */
+          color: #fff;
+        }
+        
+        .table-bordered th {
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.4px;
+        }
+        
+        .table-bordered tbody tr:nth-child(even) {
+          background: #f9fafb; /* zebra stripe */
+        }
+        
+        .table-bordered tbody tr:hover {
+          background: #eff6ff; /* light blue hover */
+          transition: background 0.2s ease-in-out;
+        }
+        
+        .table-container p {
+          text-align: center;
+          color: #6b7280;
+          padding: 20px;
+        }
+        </style>
+        
+        <div class="table-container">
+          {% if patients %}
+            <h2>Patients of {{ month_name }} {{ year }}</h2>
+            <table class="table-bordered">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Name</th>
+                  <th>Registered At</th>
+                  <th>Fee Paid</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in patients %}
+                <tr>
+                  <td>{{ p.patient_id }}</td>
+                  <td>{{ p.first_name }} {{ p.last_name }}</td>
+                  <td>{{ p.registered_at|date:"Y-m-d H:i" }}</td>
+                  <td>{{ p.fee }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% elif year and month %}
+            <p>No patients found for {{ month_name }} {{ year }}.</p>
+          {% endif %}
+        </div>
+        
+
 </body>
 </html>

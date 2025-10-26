@@ -2,32 +2,215 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        form { margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f5f5f5; }
+        body {
+      font-family: Arial, sans-serif;
+      background: #f6f7fb;
+      text-align: center;
+      padding: 40px;
+    }
+    .chart-container {
+      width: 80%;
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form { margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #0c0fcf; }
     </style>
 </head>
 <body>
     <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
-    <form method="POST" action="{% url 'patient_filter_form' %}">
-        {% csrf_token %}
-        <label>
-            Year:
-            <input type="number" name="year" min="2024" max="2100" required>
-        </label>
-        <label>
-            Month:
-            <input type="number" name="month" min="1" max="12" required>
-        </label>
-        <button type="submit">Filter</button>
-    </form>
+    <style>
+        /* ===== Inline Filter Form with Month Dropdown ===== */
+        .filter-form {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          flex-wrap: wrap; /* stack on small screens */
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
+          border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          padding: 15px 25px;
+          margin: 20px auto;
+          width: 95%;
+          max-width: 700px;
+          font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        
+        .filter-form label {
+          display: flex;
+          flex-direction: column;
+          font-size: 14px;
+          color: #374151;
+          font-weight: 500;
+        }
+        
+        .filter-form input[type="number"],
+        .filter-form select {
+          width: 130px;
+          padding: 8px 10px;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 14px;
+          transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .filter-form input[type="number"]:focus,
+        .filter-form select:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+        }
+        
+        .filter-form button {
+          background-color: #2563eb;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          padding: 10px 18px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.25s ease-in-out, transform 0.1s ease-in-out;
+        }
+        
+        .filter-form button:hover {
+          background-color: #1d4ed8;
+        }
+        
+        .filter-form button:active {
+          transform: scale(0.97);
+        }
+        
+        /* Small-screen responsiveness */
+        @media (max-width: 600px) {
+          .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .filter-form label,
+          .filter-form button {
+            width: 100%;
+          }
+        }
+        </style>
+        
+        <form method="POST" action="{% url 'patient_filter_form' %}" class="filter-form">
+          {% csrf_token %}
+        <p>Filter Patients by Year and Month:</p>
+          <label>
+            Year
+            <input type="number" name="year" min="2025" max="2100" required>
+          </label>
+    
+          <label>
+            Month
+            <select name="month" required>
+              <option value="">Select Month</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </label>
+        
+          <button type="submit">Filter</button>
+        </form>
+        <br>
+        <!-- <form method="get" action="{% url 'reception_dashboard' %}">
+        <p>Filter Patients by Patient Details:</p>
+        <label for="search">Patient ID:</label>
+        <input type="text" name="q" placeholder="Search Patient ID" value="{{ request.GET.q }}">        
+        <button type="submit">Search</button>
+        </form> -->
+    <div class="chart-container">
+        <h2>Patient Registrations Per Month</h2>
+        <canvas id="patientChart"></canvas>
+      </div>
+      <style>
+        /* ===== Table with Borders on Rows and Columns ===== */
+        .table-container {
+          width: 95%;
+          margin: 20px auto;
+          font-family: "Segoe UI", Roboto, Arial, sans-serif;
+          background: #ffffff;
+          border: 1px solid #d1d5db; /* Outer border */
+          border-radius: 8px;
+          overflow-x: auto;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .table-container h2 {
+          text-align: center;
+          margin: 15px 0;
+          color: #1f2937;
+        }
+        
+        .table-bordered {
+          width: 100%;
+          border-collapse: collapse; /* ensures clean, merged borders */
+        }
+        
+        .table-bordered th,
+        .table-bordered td {
+          border: 1px solid #cbd5e1; /* visible border for all rows/columns */
+          padding: 10px 14px;
+          text-align: left;
+          font-size: 14px;
+        }
+        
+        .table-bordered thead {
+          background: #2563eb; /* blue header */
+          color: #fff;
+        }
+        
+        .table-bordered th {
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.4px;
+        }
+        
+        .table-bordered tbody tr:nth-child(even) {
+          background: #f9fafb; /* zebra stripe */
+        }
+        
+        .table-bordered tbody tr:hover {
+          background: #eff6ff; /* light blue hover */
+          transition: background 0.2s ease-in-out;
+        }
+        
+        .table-container p {
+          text-align: center;
+          color: #6b7280;
+          padding: 20px;
+        }
+        </style>
 
+<div class="table-container">
 {% if patients %}
-        <h2>Patients for {{ year }}-{{ month|stringformat:"02d" }}</h2>
-        <table>
+        <h2>Patients in {{ year }}</h2>
+        <table class="table-bordered">
             <thead>
                 <tr>
                     <th>Patient ID</th>
@@ -48,5 +231,41 @@
     {% elif year and month %}
         <p>No patients found for {{ year }}-{{ month|stringformat:"02d" }}.</p>
     {% endif %}
+    <script>
+        const labels = {{ labels|safe }};
+        const data = {{ values|safe }};
+    
+        const ctx = document.getElementById('patientChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Patients Registered',
+              data: data,
+              borderWidth: 1,
+              backgroundColor: 'rgba(75, 192, 192, 0.5)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true, position: 'top' },
+              title: {
+                display: true,
+                text: 'Monthly Patient Registrations',
+                font: { size: 18 }
+              }
+            },
+            scales: {
+              y: { beginAtZero: true, title: { display: true, text: 'Patients' } },
+              x: { title: { display: true, text: 'Month' } }
+            }
+          }
+        });
+      </script>
+
+
 </body>
 </html>

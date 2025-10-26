@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 # Create your views here.
 
 
-@role_required(allowed_roles=['reception'])
+@role_required(allowed_roles=['reception', 'admin', 'doctor'])
 @login_required
 @csrf_exempt
 def reception_dashboard(request):

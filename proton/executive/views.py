@@ -17,6 +17,13 @@ import calendar
 from django.db.models.functions import ExtractYear, ExtractMonth
 from collections import defaultdict
 import calendar, json
+from django.shortcuts import render
+from django.db.models import Count
+from django.db.models.functions import ExtractDay
+from django.utils import timezone
+from datetime import datetime
+import calendar, json
+
 
 
 
@@ -83,41 +90,45 @@ def admin_dashboard(request):
 @role_required(allowed_roles=['admin'])
 @login_required
 def monthly_patients(request, year, month):
-    """Displays patients registered in the selected year and month"""
+    """Displays patients registered per day for a given month"""
     try:
         start_date = timezone.make_aware(datetime(year, month, 1))
-        end_date = timezone.make_aware(datetime(year, month, calendar.monthrange(year, month)[1], 23, 59, 59))
+        end_day = calendar.monthrange(year, month)[1]
+        end_date = timezone.make_aware(datetime(year, month, end_day, 23, 59, 59))
 
-        patients = Patient.objects.filter(registered_at__range=(start_date, end_date)).order_by('-registered_at')
+        # Patients for that specific month
+        patients = Patient.objects.filter(
+            registered_at__range=(start_date, end_date)
+        ).order_by('-registered_at')
     except Exception:
         patients = Patient.objects.none()
 
-    monthly_data = (
-        Patient.objects
-        .annotate(year=ExtractYear('registered_at'), month=ExtractMonth('registered_at'))
-        .values('year', 'month')
+    # Count patients per day of that month
+    daily_data = (
+        patients
+        .annotate(day=ExtractDay('registered_at'))
+        .values('day')
         .annotate(total=Count('patient_id'))
-        .order_by('year', 'month')
+        .order_by('day')
     )
 
-    # Prepare labels and values for the chart
-    labels = []
-    values = []
-    for row in monthly_data:
-        label = f"{calendar.month_name[row['month']]} {row['year']}"
-        labels.append(label)
-        values.append(row['total'])
+    # Prepare chart labels and values
+    days_in_month = range(1, calendar.monthrange(year, month)[1] + 1)
+    day_counts = {row['day']: row['total'] for row in daily_data}
+
+    labels = [str(day) for day in days_in_month]
+    values = [day_counts.get(day, 0) for day in days_in_month]
 
     context = {
         'patients': patients,
         'year': year,
         'month': month,
+        'month_name': calendar.month_name[month],
         'labels': json.dumps(labels),
         'values': json.dumps(values),
-
     }
-    return render(request, 'executive/monthly_patients.html', context)
 
+    return render(request, 'executive/monthly_patients.html', context)
 
 @role_required(allowed_roles=['admin'])
 @login_required
@@ -152,12 +163,30 @@ def yearly_patients(request, year):
         .order_by('month')
     )
 
+    monthly_data = (
+        Patient.objects
+        .annotate(year=ExtractYear('registered_at'), month=ExtractMonth('registered_at'))
+        .values('year', 'month')
+        .annotate(total=Count('patient_id'))
+        .order_by('year', 'month')
+    )
+
+        # Prepare labels and values for the chart
+    labels = []
+    values = []
+    for row in monthly_data:
+        label = f"{calendar.month_name[row['month']]} {row['year']}"
+        labels.append(label)
+        values.append(row['total'])
+
     # Create (month_number, month_name) tuples
     month_data = [(m, calendar.month_name[m]) for m in months]
     context = {
         'patients': patients,
         'year': year,
-        'month_data':month_data
+        'month_data':month_data,
+        'labels': json.dumps(labels),
+        'values': json.dumps(values),
     }
     return render(request, 'executive/yearly_patients.html', context)
 
