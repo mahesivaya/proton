@@ -1,0 +1,64 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+
+  <h1>Today's Patients and Prescriptions (Per Visit)</h1>
+
+  {% if patients_with_visits %}
+    {% for entry in patients_with_visits %}
+      <div style="border:1px solid #ccc; padding:10px; margin-bottom:20px; border-radius:5px;">
+        <h2>{{ entry.patient.patient_id }} - {{ entry.patient.first_name }} {{ entry.patient.last_name }}</h2>
+  
+        {% if entry.visits %}
+          {% for visit in entry.visits %}
+            <div style="margin-bottom:15px; padding:5px; border-bottom:1px dashed #aaa;">
+              <p><strong>Visit Time:</strong> {{ visit.visit_time|date:"H:i" }}</p>
+              <table border="1" cellspacing="0" cellpadding="5" style="width:100%; margin-bottom:5px;">
+                <tr>
+                  <th>Medicine</th>
+                  <th>Dose</th>
+                  <th>Frequency</th>
+                  <th>Time</th>
+                  <th>Duration</th>
+                  <th>Notes</th>
+                </tr>
+                {% for med in visit.medicines %}
+                  <tr>
+                    <td>{{ med.medicine.name }}</td>
+                    <td>{{ med.medicine.dose }}</td>
+                    <td>{{ med.medicine.frequency }}</td>
+                    <td>{{ med.medicine.time_period }}</td>
+                    <td>{{ med.medicine.duration }}</td>
+                    <td>{{ med.medicine.notes }}</td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No prescriptions for today.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No patients registered today.</p>
+  {% endif %}
+  
+    
+
+
+<a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+<body>
+
+</body>
+
+</html>

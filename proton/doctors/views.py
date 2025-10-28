@@ -35,9 +35,8 @@ from accounts.models import Patient, PatientMedicine
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-@role_required(allowed_roles=['doctor'])
+@role_required(allowed_roles=['doctor', 'pharmacy'])
 @login_required
-
 def patient_medicine(request, patient_id):
     patient = get_object_or_404(Patient, patient_id=patient_id)
 
