@@ -16,7 +16,7 @@
     Patient ID: {{patient.patient_id}}<br>
     Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
     Patient Age: {{patient.age}}<br>
-    Patient Gender: {{patient.sex}}<br>
+    Patient Gender: {{patient.gender}}<br>
     Patient Phone Number: {{patient.phone_number}}<br>
     Patient Address: {{patient.address}}<br>
     Visit Reason: {{patient.visit_reason}}<br>
@@ -26,43 +26,238 @@
 <br><br>
 
 {% if user.role == 'doctor' %}
-<P>Precescriptions</P>
-<form method="POST" enctype="multipart/form-data" id=patientMedicine action="{% url 'patient_medicine' patient.patient_id %}" action="">
+{% block content %}
+<style>
+form {
+  max-width: 600px;
+  background: #f9f9f9;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
 
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group label span {
+  width: 120px; /* label width */
+  font-weight: bold;
+  margin-right: 15px;
+  display: inline-block;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="submit"] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Custom radio/checkbox buttons */
+input[type="radio"],
+input[type="checkbox"] {
+  display: none;
+}
+
+.custom-option {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fff;
+  color: #007bff;
+  font-size: 13px;
+}
+
+.custom-option:hover {
+  background-color: #e0f0ff;
+}
+
+input[type="radio"]:checked + .custom-option,
+input[type="checkbox"]:checked + .custom-option {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Other input container */
+#other-input-container,
+#other-time-container {
+  margin-left: 135px; /* align with input */
+  margin-top: 5px;
+  display: none;
+}
+
+input[type="submit"] {
+  width: auto;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+  background: #0056b3;
+}
+</style>
+
+  
+  <form method="POST" action="{% url 'patient_medicine' patient.patient_id %}">
     {% csrf_token %}
-    
+  
+    <!-- Medicine Name -->
     <label>
-            <span>Name</span>
-            <input type="text" required name="medicinename"><br>
+      <span>Name</span>
+      <input type="text" name="medicinename" required placeholder="Medicine name">
     </label>
+  
+    <!-- Dose -->
     <label>
-        <span>Formula</span>
-        <input type="text" required name="medicineformula">
+      <span>Dose (mg)</span>
+      <input type="text" name="medicinedose" required placeholder="e.g. 250mg">
     </label>
-      <label>
-        <span>Dose</span>
-        <input type="text" required name="medicinedose">
+  
+    <!-- Frequency (Days) -->
+    <label>
+      <span>Days</span>
+      <input type="radio" id="freq1" name="frequency" value="1" required onclick="toggleOtherInput(false)">
+      <label for="freq1" class="custom-option">Every Day</label>
+  
+      <input type="radio" id="freq2" name="frequency" value="2" required onclick="toggleOtherInput(false)">
+      <label for="freq2" class="custom-option">Every 2 Days</label>
+  
+      <input type="radio" id="freq3" name="frequency" value="3" required onclick="toggleOtherInput(false)">
+      <label for="freq3" class="custom-option">Every 3 Days</label>
+  
+      <input type="radio" id="freqOther" name="frequency" value="other" required onclick="toggleOtherInput(true)">
+      <label for="freqOther" class="custom-option">Custom</label>
     </label>
-      <label>
-        <span>Duration</span>
-        <input type="text" required name="medicineduration">
-
-    <input class="txt_field" type="submit" value="Submit">
+  
+    <div id="other-input-container">
+      <input type="text" id="other-input" name="custom_frequency" placeholder="Custom days">
+    </div>
+  
+    <!-- Time Period (Multi-Select) -->
+    <label>
+      <span>Time of Day</span>
+      <input type="checkbox" id="timeMorning" name="time_period" value="morning" onclick="toggleOtherTime(false)">
+      <label for="timeMorning" class="custom-option">Morning</label>
+  
+      <input type="checkbox" id="timeAfternoon" name="time_period" value="afternoon" onclick="toggleOtherTime(false)">
+      <label for="timeAfternoon" class="custom-option">Afternoon</label>
+  
+      <input type="checkbox" id="timeEvening" name="time_period" value="evening" onclick="toggleOtherTime(false)">
+      <label for="timeEvening" class="custom-option">Evening</label>
+  
+      <input type="checkbox" id="timeNight" name="time_period" value="night" onclick="toggleOtherTime(false)">
+      <label for="timeNight" class="custom-option">Night</label>
+  
+      <input type="checkbox" id="timeOther" name="time_period" value="other" onclick="toggleOtherTime(true)">
+      <label for="timeOther" class="custom-option">Custom</label>
+    </label>
+  
+    <div id="other-time-container">
+      <input type="text" id="other-time-input" name="custom_time_period" placeholder="Custom time">
+    </div>
+  
+    <!-- Duration -->
+    <label>
+      <span>Duration</span>
+      <input type="text" name="medicineduration" required placeholder="e.g. 7 days">
+    </label>
+  
+    <!-- Notes -->
+    <label>
+      <span>Notes</span>
+      <input type="text" name="notes" placeholder="Optional">
+    </label>
+  
+    <input type="submit" value="Submit">
   </form>
+  
+  <script>
+  function toggleOtherInput(show) {
+    const container = document.getElementById('other-input-container');
+    const input = document.getElementById('other-input');
+    container.style.display = show ? 'block' : 'none';
+    input.required = show;
+    if (!show) input.value = '';
+  }
+  
+  function toggleOtherTime(show) {
+    const container = document.getElementById('other-time-container');
+    const input = document.getElementById('other-time-input');
+    container.style.display = show ? 'block' : 'none';
+    input.required = show;
+    if (!show) input.value = '';
+  }
+  </script>
+  
+  
+
+{% endblock %}
+
 {% endif %}
 <br><br>
 
+
+
+<h2>Medication History</h2>
+
+{% if daily_medicines %}
+  {% for date, meds in daily_medicines %}
+    <h3>{{ date|date:"l, d M Y" }}</h3>
+    <table border="1" cellspacing="0" cellpadding="8">
+      <tr>
+        <th>Medicine</th>
+        <th>Dose</th>
+        <th>Frequency</th>
+        <th>Time</th>
+        <th>Duration</th>
+        <th>Notes</th>
+      </tr>
+      {% for med in meds %}
+        <tr>
+          <td>{{ med.medicine.name }}</td>
+          <td>{{ med.medicine.dose }}</td>
+          <td>{{ med.medicine.frequency }}</td>
+          <td>{{ med.medicine.time_period }}</td>
+          <td>{{ med.medicine.duration }}</td>
+          <td>{{ med.medicine.notes }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <br>
+  {% endfor %}
+{% else %}
+  <p>No medicines prescribed yet.</p>
+{% endif %}
+
+
 {% if user.role == 'doctor'%}
-<h2>Prescriptions for {{patient.first_name}} {{patient.last_name}}</h2>
+<h2>Prescriptions history for {{patient.first_name}} {{patient.last_name}}</h2>
 
 {% for prescription in patient_medicine %}
   <div class="prescription">
     <p><strong>Date:</strong> {{ prescription.created_at|date:"Y-m-d H:i" }}</p>
       <ul>
       <li><strong>Name:</strong> {{ prescription.medicine.medicinename }}</li>
-      <li><strong>Formula:</strong> {{ prescription.medicine.medicineformula }}</li>
       <li><strong>Dose:</strong> {{ prescription.medicine.medicinedose }}</li>
+      <li><strong>Days:</strong> {{ prescription.medicine.frequency }}</li>
+      <li><strong>Hourly:</strong> {{ prescription.medicine.time_period }}</li>
       <li><strong>Duration:</strong> {{ prescription.medicine.medicineduration }}</li>
+      <li><strong>Notes:</strong> {{ prescription.medicine.notes }}</li>
     </ul></div>
 {% empty %}
   <p>No prescriptions found for this patient.</p>

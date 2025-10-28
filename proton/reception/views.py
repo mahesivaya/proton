@@ -64,6 +64,7 @@ def reception_dashboard(request):
 
     return render(request, 'reception/reception_dashboard.html', {'patients': patients, 'recent_patients': recent_patients, 'searchpatients': searchpatients, 'all_appointments': all_appointments, 'have_appointments': list(have_appointments)})
 
+from collections import defaultdict
 
 @role_required(allowed_roles=['reception', 'doctor'])
 @login_required
@@ -72,11 +73,19 @@ def patient_details(request, patient_id):
         patient = Patient.objects.get(patient_id=patient_id)
         #patient_records = PatientRecord.objects.get(patient_id = patient_id)
         patient_medicine = PatientMedicine.objects.filter(patient_id=patient_id).order_by('-created_at')
+        daily_medicines = defaultdict(list)
+        for med in patient_medicine:
+            date = med.created_at.date()  # only date part
+            daily_medicines[date].append(med)
+
+    # Sort dates descending
+        sorted_daily_medicines = sorted(daily_medicines.items(), key=lambda x: x[0], reverse=True)
+
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
 
-    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_medicine':patient_medicine})
+    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_medicine':patient_medicine, 'daily_medicines': sorted_daily_medicines})
 
 
 @login_required

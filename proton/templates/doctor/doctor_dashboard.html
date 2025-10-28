@@ -36,7 +36,7 @@
                   <td>{{ appointment.patient.first_name }}</td>
                   <td>{{ appointment.patient.last_name }}</td>
                   <td>{{ appointment.patient.age }}</td>
-                  <td>{{ appointment.patient.sex }}</td>
+                  <td>{{ appointment.patient.gender }}</td>
                   <td>{{ appointment.patient.registered_at|date:"Y-m-d H:i" }}</td>
                   <td>
                     <a href="{% url 'patient_details' appointment.patient.patient_id %}">

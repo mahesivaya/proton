@@ -29,17 +29,52 @@ def patient_records(request, patient_id):
     return render(request, 'doctor/patient_details.html', {'patient_records': patient_records})
 
 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from accounts.models import Patient, PatientMedicine
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 @role_required(allowed_roles=['doctor'])
+@login_required
+
 def patient_medicine(request, patient_id):
-    patient = Patient.objects.get(patient_id=patient_id)
+    patient = get_object_or_404(Patient, patient_id=patient_id)
+
     if request.method == "POST":
-        form_data = request.POST.dict()
-        form_data.pop('csrfmiddlewaretoken', None)
-        # patient = get_object_or_404(Patient, id=patient_id)
+        # Extract form data
+        name = request.POST.get("medicinename")
+        dose = request.POST.get("medicinedose")
+        duration = request.POST.get("medicineduration")
+        notes = request.POST.get("notes")
+
+        # Handle frequency (days)
+        frequency = request.POST.get("frequency")
+        custom_frequency = request.POST.get("custom_frequency")
+        final_frequency = custom_frequency if frequency == "other" and custom_frequency else f"Every {frequency} Day(s)"
+
+        # Handle time periods (multi-select)
+        time_periods = request.POST.getlist("time_period")
+        custom_time_period = request.POST.get("custom_time_period")
+        if "other" in time_periods and custom_time_period:
+            time_periods.remove("other")
+            time_periods.append(custom_time_period)
+        final_time_period = ", ".join(tp.capitalize() for tp in time_periods)
+
+        # Save medicine for patient
         PatientMedicine.objects.create(
             patient=patient,
-            medicine=form_data)
-        
-        messages.success(request, "Patient registered successfully")
-        return redirect('patient_details', patient_id=patient_id)
-    return render(request, 'reception/reception_dashboard.html')    
+            medicine={
+                "name": name,
+                "dose": dose,
+                "frequency": final_frequency,
+                "time_period": final_time_period,
+                "duration": duration,
+                "notes": notes
+            }
+        )
+
+        messages.success(request, f"Medicine '{name}' added for {patient.first_name}.")
+        return redirect("patient_details", patient_id=patient_id)
+
+    return render(request, "executive/patient_medicine.html", {"patient": patient})
