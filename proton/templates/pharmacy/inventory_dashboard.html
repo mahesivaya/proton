@@ -1,0 +1,23 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+
+  <h1>Inventory dashboard</h1>
+
+<a href="{% url 'pharmacy_dashboard' %}" class="btn btn-primary mt-3">Pharmacy Dashboard</a>
+<br>
+<a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+<body>
+
+</body>
+
+</html>

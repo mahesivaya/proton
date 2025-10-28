@@ -1,5 +1,5 @@
 {% load static %}
-{% load custom_filters %}
+<!-- {% load custom_filters %} -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,8 +54,8 @@
   {% endif %}
   
     
-
-
+<a href ="{% url 'inventory_dashboard' %}" class="btn btn-primary mt-3">inventory_dashboard</a>
+<br>
 <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
 <body>
 

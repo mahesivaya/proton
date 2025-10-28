@@ -78,3 +78,9 @@ def pharmacy_dashboard(request):
     return render(request, "pharmacy/pharmacy_dashboard.html", {
         "patients_with_visits": patients_with_visits
     })
+
+
+@role_required(allowed_roles=['pharmacy', 'admin'])
+@login_required
+def inventory_dashboard(request):
+    return render(request, "pharmacy/inventory_dashboard.html")
