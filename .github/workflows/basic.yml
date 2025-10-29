@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend  # folder containing manage.py
+        working-directory: proton  # folder containing manage.py
 
     steps:
       - name: Checkout code
