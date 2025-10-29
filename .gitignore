@@ -31,3 +31,6 @@ env*
 .vscode/
 *.log
 *rst
+
+*.yml
+*.yaml
