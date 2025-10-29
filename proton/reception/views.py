@@ -2,6 +2,7 @@ from audioop import add
 import re
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.template import context
 from accounts.decorators import role_required
 from accounts.models import Patient, ScheduleAppointment, PatientMedicine
 from django.contrib import messages
@@ -84,8 +85,31 @@ def patient_details(request, patient_id):
     except Patient.DoesNotExist:
         messages.error(request, "Patient not found")
         return redirect('reception_dashboard')
+    patient = get_object_or_404(Patient, patient_id=patient_id)
 
-    return render(request, 'reception/patient_details.html', {'patient': patient, 'patient_medicine':patient_medicine, 'daily_medicines': sorted_daily_medicines})
+    if request.method == "POST":
+        print("FILES:", request.FILES)
+
+        if request.FILES.get("image"):
+            description = request.POST.get("description", "")
+            PatientImage.objects.create(
+                patient=patient,
+                image=request.FILES["image"],
+                description=description
+            )
+            messages.success(request, "Image uploaded successfully!")
+            return redirect("patient_details", patient_id=patient.patient_id)
+        else:
+            messages.error(request, "No image received!")
+
+    patient_images = patient.images.order_by('-uploaded_at')
+    context = {
+        "patient": patient,
+        "patient_medicine": patient_medicine,
+        "daily_medicines": sorted_daily_medicines,
+        "patient_images": patient_images,
+    }
+    return render(request, 'reception/patient_details.html', context)
 
 
 @login_required
@@ -133,3 +157,35 @@ def schedule_appointment(request, patient_id):
 def appointments(request):
     all_appointments = ScheduleAppointment.objects.all().order_by('-appointment_date')
     return render(request, 'reception/reception_dashboard.html', {'all_appointments': all_appointments})
+
+# views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from accounts.models import Patient, PatientImage
+
+@role_required(allowed_roles=['reception', 'doctor'])
+@login_required
+def upload_patient_image(request, patient_id):
+    patient = get_object_or_404(Patient, patient_id=patient_id)
+
+    if request.method == "POST" and request.FILES.get("image"):
+        print("FILES:", request.FILES)
+
+        if request.FILES.get("image"):
+            description = request.POST.get("description", "")
+            PatientImage.objects.create(
+                patient=patient,
+                image=request.FILES["image"],
+                description=description
+            )
+            messages.success(request, "Image uploaded successfully!")
+            return redirect("patient_details", patient_id=patient.patient_id)
+        else:
+            messages.error(request, "No image received!")
+
+    patient_images = patient.images.order_by('-uploaded_at')
+    return render(request, "reception/upload_image.html", {
+        "patient": patient,
+        "patient_images": patient_images,
+    })
