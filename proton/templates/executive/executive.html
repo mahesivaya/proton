@@ -48,6 +48,33 @@
   {% endfor %}
 </table>
 
+<h3>Patients by Age Group</h3>
+
+<table border="1" cellpadding="5">
+    <tr><th>Age Group</th><th>Total</th></tr>
+    <tr><td>0-12</td><td>{{ age_groups.children }}</td></tr>
+    <tr><td>13-19</td><td>{{ age_groups.teens }}</td></tr>
+    <tr><td>20-40</td><td>{{ age_groups.adults }}</td></tr>
+    <tr><td>41-60</td><td>{{ age_groups.middle_age }}</td></tr>
+    <tr><td>60+</td><td>{{ age_groups.seniors }}</td></tr>
+</table>
+
+<br>
+<table border="1">
+  <tr>
+      <th>Visit Reason</th>
+      <th>Count</th>
+  </tr>
+
+  {% for row in visit_reason_group %}
+  <tr>
+      <td>{{ row.visit_reason }}</td>
+      <td>{{ row.total }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+
 <br><br>
 <!-- <h3>Patients Registered Per Day</h3>
 <table border="1" cellpadding="8" cellspacing="0">

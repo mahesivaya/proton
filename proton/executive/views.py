@@ -75,13 +75,29 @@ def admin_dashboard(request):
     for entry in monthly_data:
         entry['month_name'] = calendar.month_name[entry['month']]
 
+    # Age group distribution
+    age_groups = Patient.objects.aggregate(
+        children = Count(Case(When(age__lte=12, then=1), output_field=IntegerField())),
+        teens = Count(Case(When(age__gte=13, age__lte=19, then=1), output_field=IntegerField())),
+        adults = Count(Case(When(age__gte=20, age__lte=40, then=1), output_field=IntegerField())),
+        middle_age = Count(Case(When(age__gte=41, age__lte=60, then=1), output_field=IntegerField())),
+        seniors = Count(Case(When(age__gte=61, then=1), output_field=IntegerField())),
+    )
+
+
+    visit_reason_group = Patient.objects.values('visit_reason').annotate(total=Count('visit_reason')).order_by('-total')
+
+
+
     context = {
         'patients': patients,
         'todays_scheduled_appointments': list(todays_scheduled_appointments),
         'patients_per_day': patients_per_day,
         'dates': dates,
         'years_months': dict(years_months),
-        'monthly_data': monthly_data
+        'monthly_data': monthly_data,
+        'age_groups': age_groups,
+        'visit_reason_group': visit_reason_group,
     }
 
     return render(request, 'executive/executive.html', context)
@@ -190,3 +206,8 @@ def yearly_patients(request, year):
     }
     return render(request, 'executive/yearly_patients.html', context)
 
+
+
+from django.db.models import Count, Case, When, IntegerField
+from django.utils import timezone
+from datetime import date
