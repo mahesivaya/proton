@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #chat-log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+        #chat-message-input { width: 80%; }
+        #chat-message-submit { width: 18%; }
+    </style>
+</head>
+<body>
+
+<h2>Chat Room: <span id="room-name">{{ room_name }}</span></h2>
+
+<div id="chat-log"></div>
+
+<input id="chat-message-input" type="text" placeholder="Type a message..." />
+<button id="chat-message-submit">Send</button>
+
+<script>
+    const roomName = "{{ room_name }}";
+    const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+
+    const chatSocket = new WebSocket(
+        ws_scheme + '://' + window.location.host + `/ws/chat/${roomName}/`
+    );
+
+    chatSocket.onopen = () => {
+        console.log("✅ WebSocket Connected");
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.querySelector('#chat-log');
+
+        chatLog.innerHTML += `<div>${data.message}</div>`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error("❌ WebSocket closed unexpectedly", e);
+    };
+
+    chatSocket.onerror = function(e) {
+        console.error("⚠️ WebSocket error:", e);
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        e.preventDefault();
+
+        const input = document.querySelector('#chat-message-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        console.log("📩 Sending:", message);
+
+        chatSocket.send(JSON.stringify({ message }));
+        input.value = "";
+    };
+</script>
+</body>
+</html>
+

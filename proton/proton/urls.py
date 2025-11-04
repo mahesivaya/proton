@@ -28,4 +28,5 @@ urlpatterns = [
     path('doctors/', include('doctors.urls')),
     path('executive/', include('executive.urls')),
     path('pharmacy/', include('pharmacy.urls')),
+    path('chat/', include('chat.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
