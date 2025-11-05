@@ -2,41 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat Room</title>
+    <title>Clinic Chat Room</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #chat-log { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-        #chat-message-input { width: 80%; }
-        #chat-message-submit { width: 18%; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #chat-log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 400px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            margin-bottom: 10px;
+        }
+
+        #chat-message-input {
+            width: 80%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        #chat-message-submit {
+            width: 18%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .message b {
+            color: #007BFF;
+        }
+
+        /* Optional: mobile responsive */
+        @media (max-width: 600px) {
+            #chat-message-input, #chat-message-submit {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<h2>Chat Room: <span id="room-name">{{ room_name }}</span></h2>
+<h2>Clinic Chat Room</h2>
 
 <div id="chat-log"></div>
 
-<input id="chat-message-input" type="text" placeholder="Type a message..." />
+<input id="chat-message-input" type="text" placeholder="Type a message..." autocomplete="off"/>
 <button id="chat-message-submit">Send</button>
 
 <script>
-    const roomName = "{{ room_name }}";
+    // ✅ Get username from Django context
+    const username = "{{ request.user.username }}";
+
+    // Fixed shared room for doctor & reception
+    const roomName = "clinic_chat";
+
     const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 
     const chatSocket = new WebSocket(
-        ws_scheme + '://' + window.location.host + `/ws/chat/${roomName}/`
+        `${ws_scheme}://${window.location.host}/ws/chat/${roomName}/`
     );
 
-    chatSocket.onopen = () => {
-        console.log("✅ WebSocket Connected");
+    // When WebSocket opens
+    chatSocket.onopen = function() {
+        console.log("✅ WebSocket connected");
     };
 
+    // Receive message from server
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        const chatLog = document.querySelector('#chat-log');
+        const sender = data.username || "Unknown";
+        const message = data.message;
 
-        chatLog.innerHTML += `<div>${data.message}</div>`;
-        chatLog.scrollTop = chatLog.scrollHeight;
+        const chatLog = document.getElementById("chat-log");
+        chatLog.innerHTML += `<div class="message"><b>${sender}:</b> ${message}</div>`;
+        chatLog.scrollTop = chatLog.scrollHeight;  // scroll to bottom
     };
 
     chatSocket.onclose = function(e) {
@@ -47,19 +89,29 @@
         console.error("⚠️ WebSocket error:", e);
     };
 
-    document.querySelector('#chat-message-submit').onclick = function(e) {
+    // Send message
+    document.getElementById('chat-message-submit').onclick = function(e) {
         e.preventDefault();
-
-        const input = document.querySelector('#chat-message-input');
+        const input = document.getElementById('chat-message-input');
         const message = input.value.trim();
         if (!message) return;
 
-        console.log("📩 Sending:", message);
+        chatSocket.send(JSON.stringify({
+            message: message,
+            username: username
+        }));
 
-        chatSocket.send(JSON.stringify({ message }));
-        input.value = "";
+        input.value = "";  // clear input
     };
+
+    // Optional: send message on Enter key
+    document.getElementById('chat-message-input').addEventListener("keyup", function(e) {
+        if (e.key === "Enter") {
+            document.getElementById('chat-message-submit').click();
+        }
+    });
 </script>
+
 </body>
 </html>
 
