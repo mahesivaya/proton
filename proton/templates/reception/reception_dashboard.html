@@ -1,213 +1,178 @@
-
 {% extends 'base.html' %}
-
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  </head>
-
-<body>
-<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
-
-<div style="text-align:right; margin-bottom: 10px;">
-    <button onclick="window.location.href='{% url 'chat_room' %}'"
-            style="padding:10px 15px; background:green; color:white; border:none; border-radius:6px;">
-        💬 Doctor Chat
-    </button>
-</div>
-
-
-
->>>>>>> Stashed changes
 {% block content %}
-<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
-<div class="card mx-auto text-center" style="max-width: 400px;">
-    <div class="card-body">
-        <h3 class="card-title">Welcome, {{request.user.username}} Reception dashboard!</h3>
-        <br><br>
-        <P>Register New Patients</P>
-        <form method="POST" enctype="multipart/form-data">
+<div class="container mx-auto py-6">
 
-            {% csrf_token %}
-            <label>
-                <span>First Name</span>
-                <input type="text" required name="first_name"><br>
-            </label>
-            <label>
-                <span>Last Name</span>
-                <input type="text" required name="last_name">
-            </label>
-            <label>
-                <span>Age</span>
-                <input type="text" required name="age">
-            </label>
-             <label>
-              <span>Gender</span>
-                <input type="radio"  required name="gender" value="male">Male
-                <input type="radio" required name="gender" value="female">Female
-            </label>
-            <label>
-                <span>Email</span>
-                <input type="text" name="email">
-            </label>
-            <label>
-                <span>Phone</span>
-                <input type="text" required name="phone_number">
-            </label>
-            <label>
-                <span>Address</span>
-                <input type="text" name="address">
-            </label>
-            <label>
-                <span>Visit reason</span>
-                <input type="text" name="visit_reason">
-            </label>
-            <label>
-                <span>Referral</span>
-                <input type="text" name="referral">
-            </label>
-            <label>
-                <span>Fee</span>
-                <input type="text" name="fee">
-            </label>
+  <!-- Header / Navigation -->
+  <div class="flex justify-between items-center mb-6">
+    <a href="{% url 'reception_dashboard' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      🏠 Home
+    </a>
+    <button onclick="window.location.href='{% url 'chat_room' %}'"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      💬 Doctor Chat
+    </button>
+  </div>
 
-            <input class="txt_field" type="submit" value="Submit">
-          </form>
-        <br><br>
+  <!-- Welcome Message -->
+  <div class="bg-white shadow-md p-4 rounded mb-6 text-center">
+    <h2 class="text-xl font-bold mb-2">Welcome, {{ request.user.username }}!</h2>
+    <p class="text-gray-600">Reception Dashboard</p>
+  </div>
 
-        <p>Old patients</p>
-        <br>
-        <form method="get" action="{% url 'reception_dashboard' %}">
-            <input type="text" name="q" placeholder="Search Patient ID" value="{{ request.GET.q }}">
-            <button type="submit">Search</button>
-        </form>
-          
-          {% if patients %}
-            <ul>
-              {% for patient in searchpatients %}
-	      <li>{{ patient.patient_id }} - {{ patient.first_name }} - {{patient.last_name}} - {{address}}</li>
-              <a href="{% url 'schedule_appointment' patient.patient_id %}"><button>Add to appointment</button></a>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>No patients found.</p>
-          {% endif %}
-          
-        <br><br>
-        <P>Registered Patients</P>
-<table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Age</th>
-        <th>Registered On</th>
-        <th>More Details</th>
-        <th>Add to Appointment</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for patient in recent_patients %}
-      <tr>
-        <td>{{ patient.patient_id }}</td>
-        <td>{{ patient.first_name }}</td>
-        <td>{{ patient.last_name }}</td>
-        <td>{{ patient.age }}</td>
-        <td>{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
-        <td>
-          <a href="{% url 'patient_details' patient.patient_id %}">
-            <button type="button">Details</button>
-          </a>
-        </td>
-        <td>
-          {% if patient.patient_id in have_appointments %}
-            <button class="btn-added" disabled>Added</button>
-          {% else %}
-            <form method="get" action="{% url 'schedule_appointment' patient.patient_id %}">
-                <button class="btn-add" type="submit">Add to Appointment</button>
-            </form>
-          {% endif %}
-        </td>
-      </tr>
+  <!-- Register New Patient -->
+  <div class="bg-white shadow-md p-6 rounded mb-8">
+    <h3 class="text-lg font-semibold mb-4">📝 Register New Patient</h3>
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% csrf_token %}
+      <label>
+        <span>First Name</span>
+        <input type="text" name="first_name" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Last Name</span>
+        <input type="text" name="last_name" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Age</span>
+        <input type="number" name="age" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Gender</span><br>
+        <input type="radio" name="gender" value="Male" required> Male
+        <input type="radio" name="gender" value="Female" required> Female
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Phone</span>
+        <input type="text" name="phone_number" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Address</span>
+        <input type="text" name="address" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Visit Reason</span>
+        <input type="text" name="visit_reason" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Referral</span>
+        <input type="text" name="referral" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Fee</span>
+        <input type="number" name="fee" class="w-full border rounded px-2 py-1">
+      </label>
+      <div class="md:col-span-2">
+        <input type="submit" value="Register" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      </div>
+    </form>
+  </div>
 
-      <!-- Optional collapsible details row -->
-      <!-- <tr class="collapse" id="details/{{ patient.patient_id }}">
-        <td colspan="7">
-          <div class="card card-body">
-            <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-            <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
-            <p><strong>Address:</strong> {{ patient.address }}</p>
-          </div>
-        </td>
-      </tr> -->
-      {% empty %}
-      <tr>
-        <td colspan="7">No patients registered yet.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-</table>
+  <!-- Search Old Patients -->
+  <div class="bg-white shadow-md p-6 rounded mb-8">
+    <h3 class="text-lg font-semibold mb-4">🔍 Search Old Patients</h3>
+    <form method="get" action="{% url 'reception_dashboard' %}" class="flex gap-2">
+      <input type="text" name="q" placeholder="Search by Patient ID"
+             value="{{ request.GET.q }}" class="border rounded px-2 py-1 flex-grow">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Search
+      </button>
+    </form>
 
-<br><br>
-<P>Appointments Scheduled</P>
-<table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-      <tr>
-        <th>Patient ID</th>
-        <th>DateTime</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for appointment in all_appointments %}
+    {% if searchpatients %}
+      <ul class="mt-4">
+        {% for patient in searchpatients %}
+          <li class="border-b py-2">
+            {{ patient.patient_id }} - {{ patient.first_name }} {{ patient.last_name }}
+            <a href="{% url 'schedule_appointment' patient.patient_id %}"
+               class="ml-4 bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">
+              Add to Appointment
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif request.GET.q %}
+      <p class="text-gray-500 mt-4">No patients found.</p>
+    {% endif %}
+  </div>
+
+  <!-- Registered Patients Table -->
+  <div class="bg-white shadow-md p-6 rounded mb-8 overflow-x-auto">
+    <h3 class="text-lg font-semibold mb-4">👩‍⚕️ Registered Patients</h3>
+    <table class="min-w-full border">
+      <thead class="bg-blue-100">
         <tr>
-          <td>{{appointment.patient.patient_id}}</td>
-          <td>{{appointment.appointment_date}}</td>
+          <th class="border px-2 py-1">ID</th>
+          <th class="border px-2 py-1">Name</th>
+          <th class="border px-2 py-1">Age</th>
+          <th class="border px-2 py-1">Registered On</th>
+          <th class="border px-2 py-1">Details</th>
+          <th class="border px-2 py-1">Appointment</th>
         </tr>
-      {% empty %}
-        <tr><td colspan="7">No patients registered yet.</td></tr>
-        <tr class="collapse" id="details/{{ patient.patient_id }}">
-            <td colspan="5">
-              <div class="card card-body">
-                <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
-              </div>
+      </thead>
+      <tbody>
+        {% for patient in recent_patients %}
+          <tr>
+            <td class="border px-2 py-1">{{ patient.patient_id }}</td>
+            <td class="border px-2 py-1">{{ patient.first_name }} {{ patient.last_name }}</td>
+            <td class="border px-2 py-1">{{ patient.age }}</td>
+            <td class="border px-2 py-1">{{ patient.registered_at|date:"Y-m-d H:i" }}</td>
+            <td class="border px-2 py-1">
+              <a href="{% url 'patient_details' patient.patient_id %}"
+                 class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">View</a>
+            </td>
+            <td class="border px-2 py-1">
+              {% if patient.patient_id in have_appointments %}
+                <button class="bg-gray-400 text-white px-2 py-1 rounded" disabled>Added</button>
+              {% else %}
+                <a href="{% url 'schedule_appointment' patient.patient_id %}"
+                   class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700">Add</a>
+              {% endif %}
             </td>
           </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-<br><br>
-<script>
-  function disableButton(btn) {
-      btn.disabled = true;                 // Disable the button
-      btn.innerText = "Added";     // Change text
-      btn.style.backgroundColor = "Green";  // Change color (gray out)
-      btn.style.cursor = "not-allowed";    // Change cursor
-  }
-  </script>
-  <style>
-    .btn-medium {
-        padding: 10px 20px;
-        font-size: 16px;
-        width: 150px;
-        height: 55px;
-    }
-    </style>
-        <br><br>
-        <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
-    </div>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-2 text-gray-500">No patients registered yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Scheduled Appointments -->
+  <div class="bg-white shadow-md p-6 rounded">
+    <h3 class="text-lg font-semibold mb-4">📅 Appointments Scheduled</h3>
+    <table class="min-w-full border">
+      <thead class="bg-blue-100">
+        <tr>
+          <th class="border px-2 py-1">Patient ID</th>
+          <th class="border px-2 py-1">Date & Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appointment in all_appointments %}
+          <tr>
+            <td class="border px-2 py-1">{{ appointment.patient.patient_id }}</td>
+            <td class="border px-2 py-1">{{ appointment.appointment_date }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="2" class="text-center py-2 text-gray-500">No appointments yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center mt-10">
+    <a href="{% url 'logout' %}" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+      🚪 Logout
+    </a>
+  </div>
+
 </div>
 {% endblock %}
 
-<<<<<<< Updated upstream
-=======
-
-</body>
->>>>>>> Stashed changes

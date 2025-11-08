@@ -1,585 +1,234 @@
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Details{% endblock %}
+
 {% block content %}
-{% csrf_token %}
-    <P>Hello {{request.user.username}} {{request.user.id}}</P> &nbsp;&nbsp;
-    &nbsp;&nbsp;
-    <br>
-    <p>Patient Details</p>
+<div class="container mx-auto p-6">
 
-
-    Patient ID: {{patient.patient_id}}<br>
-    Patient Name: {{patient.first_name}} {{patient.last_name}}<br>
-    Patient Age: {{patient.age}}<br>
-    Patient Gender: {{patient.gender}}<br>
-    Patient Phone Number: {{patient.phone_number}}<br>
-    Patient Address: {{patient.address}}<br>
-    Visit Reason: {{patient.visit_reason}}<br>
-<br><br>
-
-{% if user.role == 'reception' %}
-<h2>Upload Images</h2>
-
-<form method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  <div>
-    <label for="image"></label><br>
-    <input type="file" id="image" name="image" accept="image/*" capture="camera" required>
-  </div>
-  <br>
-  <button type="submit">Upload</button>
-</form>
-
-
-<h2>Take Photo</h2>
-
-<div id="camera-container" style="margin-bottom: 1rem;">
-  <video id="camera" autoplay playsinline width="320" height="240" style="border: 1px solid #1f1f31; border-radius: 8px;"></video>
-  <canvas id="canvas" style="display:none;"></canvas>
-
-  <div style="margin-top: 0.5rem;">
-    <button id="startCamera" type="button">📷 Start Camera</button>
-    <button id="capture" type="button" style="display:none;">📸 Capture & Save</button>
-  </div>
-</div>
-
-<form id="uploadForm" method="POST" enctype="multipart/form-data" style="display:none;">
-  {% csrf_token %}
-  <input type="file" name="image" id="fileInput" accept="image/*" capture="camera">
-  <input type="hidden" name="description" value="Auto-captured from camera">
-</form>
-
-<div id="upload-status"></div>
-
-
-<script>
-const video = document.getElementById("camera");
-const canvas = document.getElementById("canvas");
-const startBtn = document.getElementById("startCamera");
-const captureBtn = document.getElementById("capture");
-const fileInput = document.getElementById("fileInput");
-const form = document.getElementById("uploadForm");
-const statusDiv = document.getElementById("upload-status");
-
-let stream = null;
-
-// ✅ Start the camera
-startBtn.onclick = async () => {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-    captureBtn.style.display = "inline-block";
-    startBtn.style.display = "none";
-  } catch (err) {
-    alert("Camera access denied or not available.");
-  }
-};
-
-// ✅ Capture & auto-save the photo
-captureBtn.onclick = () => {
-  const ctx = canvas.getContext("2d");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0);
-
-  // Stop camera after capture
-  stream.getTracks().forEach(track => track.stop());
-
-  // Convert to blob and upload
-  canvas.toBlob(async blob => {
-    const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
-    const formData = new FormData(form);
-    formData.set("image", file);
-
-    // Auto-upload via fetch()
-    statusDiv.innerText = "📤 Uploading...";
-    try {
-      const response = await fetch("", {  // empty URL posts to current page
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        statusDiv.innerText = "✅ Saved successfully! Reloading...";
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        statusDiv.innerText = "❌ Upload failed.";
-      }
-    } catch (err) {
-      statusDiv.innerText = "⚠️ Error uploading photo.";
-    }
-  }, "image/jpeg");
-};
-</script>
-
-<br><br>
-{% endblock %}
-{% endif %}
-
-
-<!-- <h3>Patient Photos</h3>
-
-{% if patient.images.all %}
-  {% for img in patient.images.all %}
-    <img src="{{ img.image.url }}" width="300" style="margin:5px; border:2px solid #888;">
-  {% endfor %}
-{% else %}
-  <p>No images uploaded.</p>
-{% endif %}
-
-<br>
-<br> -->
-
-{% if user.role == 'doctor' %}
-<style>
-form {
-  max-width: 600px;
-  background: #f9f9f9;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  font-family: Arial, sans-serif;
-}
-
-.form-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.form-group label span {
-  width: 120px; /* label width */
-  font-weight: bold;
-  margin-right: 15px;
-  display: inline-block;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="submit"] {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-/* Custom radio/checkbox buttons */
-input[type="radio"],
-input[type="checkbox"] {
-  display: none;
-}
-
-.custom-option {
-  display: inline-block;
-  padding: 6px 12px;
-  margin-right: 6px;
-  border: 1px solid #007bff;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #fff;
-  color: #007bff;
-  font-size: 13px;
-}
-
-.custom-option:hover {
-  background-color: #e0f0ff;
-}
-
-input[type="radio"]:checked + .custom-option,
-input[type="checkbox"]:checked + .custom-option {
-  background-color: #007bff;
-  color: #fff;
-}
-
-/* Other input container */
-#other-input-container,
-#other-time-container {
-  margin-left: 135px; /* align with input */
-  margin-top: 5px;
-  display: none;
-}
-
-input[type="submit"] {
-  width: auto;
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  cursor: pointer;
-  border-radius: 6px;
-  margin-top: 10px;
-}
-
-input[type="submit"]:hover {
-  background: #0056b3;
-}
-</style>
-
-  
-  <form method="POST" action="{% url 'patient_medicine' patient.patient_id %}">
-    {% csrf_token %}
-  
-    <!-- Medicine Name -->
-    <label>
-      <span>Name</span>
-      <input type="text" name="medicinename" required placeholder="Medicine name">
-    </label>
-  
-    <!-- Dose -->
-    <label>
-      <span>Dose (mg)</span>
-      <input type="text" name="medicinedose" required placeholder="e.g. 250mg">
-    </label>
-  
-    <!-- Frequency (Days) -->
-    <label>
-      <span>Days</span>
-      <input type="radio" id="freq1" name="frequency" value="1" required onclick="toggleOtherInput(false)">
-      <label for="freq1" class="custom-option">Every Day</label>
-  
-      <input type="radio" id="freq2" name="frequency" value="2" required onclick="toggleOtherInput(false)">
-      <label for="freq2" class="custom-option">Every 2 Days</label>
-  
-      <input type="radio" id="freq3" name="frequency" value="3" required onclick="toggleOtherInput(false)">
-      <label for="freq3" class="custom-option">Every 3 Days</label>
-  
-      <input type="radio" id="freqOther" name="frequency" value="other" required onclick="toggleOtherInput(true)">
-      <label for="freqOther" class="custom-option">Custom</label>
-    </label>
-  
-    <div id="other-input-container">
-      <input type="text" id="other-input" name="custom_frequency" placeholder="Custom days">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <p class="text-gray-700 text-lg font-semibold">
+        👋 Hello, {{ request.user.username }} (ID: {{ request.user.id }})
+      </p>
     </div>
-  
-    <!-- Time Period (Multi-Select) -->
-    <label>
-      <span>Time of Day</span>
-      <input type="checkbox" id="timeMorning" name="time_period" value="morning" onclick="toggleOtherTime(false)">
-      <label for="timeMorning" class="custom-option">Morning</label>
-  
-      <input type="checkbox" id="timeAfternoon" name="time_period" value="afternoon" onclick="toggleOtherTime(false)">
-      <label for="timeAfternoon" class="custom-option">Afternoon</label>
-  
-      <input type="checkbox" id="timeEvening" name="time_period" value="evening" onclick="toggleOtherTime(false)">
-      <label for="timeEvening" class="custom-option">Evening</label>
-  
-      <input type="checkbox" id="timeNight" name="time_period" value="night" onclick="toggleOtherTime(false)">
-      <label for="timeNight" class="custom-option">Night</label>
-  
-      <input type="checkbox" id="timeOther" name="time_period" value="other" onclick="toggleOtherTime(true)">
-      <label for="timeOther" class="custom-option">Custom</label>
-    </label>
-  
-    <div id="other-time-container">
-      <input type="text" id="other-time-input" name="custom_time_period" placeholder="Custom time">
+    <div class="flex space-x-3">
+      <a href="{% url 'redirect_to_home' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">🏠 Home</a>
+      <button onclick="window.location.href='{% url 'chat_room' %}'"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">💬 Chat</button>
+      <a href="{% url 'logout' %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md">Logout</a>
     </div>
-  
-    <!-- Duration -->
-    <label>
-      <span>Duration</span>
-      <input type="text" name="medicineduration" required placeholder="e.g. 7 days">
-    </label>
-  
-    <!-- Notes -->
-    <label>
-      <span>Notes</span>
-      <input type="text" name="notes" placeholder="Optional">
-    </label>
-  
-    <input type="submit" value="Submit">
-  </form>
-  
-  <script>
-  function toggleOtherInput(show) {
-    const container = document.getElementById('other-input-container');
-    const input = document.getElementById('other-input');
-    container.style.display = show ? 'block' : 'none';
-    input.required = show;
-    if (!show) input.value = '';
-  }
-  
-  function toggleOtherTime(show) {
-    const container = document.getElementById('other-time-container');
-    const input = document.getElementById('other-time-input');
-    container.style.display = show ? 'block' : 'none';
-    input.required = show;
-    if (!show) input.value = '';
-  }
-  </script>
-  
-
-
-{% endif %}
-<br><br>
-
-
-<br><br>
-
-<div class="tabs">
-  <!-- Tab buttons -->
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="medication-tab">Medication</button>
-    <button class="tab-btn" data-tab="images-tab">Images</button>
   </div>
 
+  <!-- Patient Info -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-bold mb-4">Patient Details</h2>
+    <div class="grid md:grid-cols-2 gap-x-6 text-gray-700 leading-relaxed">
+      <p><strong>Patient ID:</strong> {{ patient.patient_id }}</p>
+      <p><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}</p>
+      <p><strong>Age:</strong> {{ patient.age }}</p>
+      <p><strong>Gender:</strong> {{ patient.gender }}</p>
+      <p><strong>Phone:</strong> {{ patient.phone_number }}</p>
+      <p><strong>Address:</strong> {{ patient.address }}</p>
+      <p><strong>Visit Reason:</strong> {{ patient.visit_reason }}</p>
+    </div>
+  </div>
 
-  <!-- {% if patient.images.all %}
-  {% for img in patient.images.all %}
-    <img src="{{ img.image.url }}" width="300" style="margin:5px; border:2px solid #888;">
-  {% endfor %}
-{% else %}
-  <p>No images uploaded.</p>
-{% endif %} -->
+  {% if user.role == 'reception' %}
+  <!-- Reception: Upload or Capture Image -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-semibold mb-3">📸 Upload or Capture Patient Image</h2>
 
-  <!-- Images Tab -->
-  <div class="tab-content" id="images-tab">
-    <h3>Patient Images</h3>
-    {% if patient.images.all %}
-        {# Sort all images by uploaded_at descending #}
-        {% with patient.images.all|dictsortreversed:"uploaded_at" as sorted_images %}
-        
-        {# Group by date #}
-        {% regroup sorted_images by uploaded_at.date as image_days %}
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      <input type="file" name="image" accept="image/*" capture="camera" required class="block w-full border p-2 rounded-md">
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Upload</button>
+    </form>
 
-        {% for day in image_days %}
-            <h3>{{ day.grouper|date:"l, d M Y" }}</h3>
-            <div class="image-gallery">
-                {# Sort images of this day descending by time #}
-                {% for img in day.list|dictsortreversed:"uploaded_at" %}
-                    <div class="img-container" onclick="openModal('{{ img.image.url }}')">
-                        <img src="{{ img.image.url }}" alt="Patient Image">
-                        <p style="font-size:12px; text-align:center;">
-                            {{ img.uploaded_at|date:"H:i:s" }}
-                        </p>
-                    </div>
-                {% endfor %}
-            </div>
+    <div class="mt-6">
+      <video id="camera" autoplay playsinline class="border rounded-md w-80"></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <div class="mt-2">
+        <button id="startCamera" class="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700">Start Camera</button>
+        <button id="capture" style="display:none;" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700">Capture & Save</button>
+      </div>
+      <div id="upload-status" class="mt-3 text-sm text-gray-600"></div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if user.role == 'doctor' %}
+  <!-- Doctor: Prescribe Medicine -->
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-semibold mb-4">💊 Prescribe Medicine</h2>
+    <form method="POST" action="{% url 'patient_medicine' patient.patient_id %}" class="space-y-4">
+      {% csrf_token %}
+      <div class="grid md:grid-cols-2 gap-4">
+        <input type="text" name="medicinename" placeholder="Medicine name" required class="border rounded-md p-2 w-full">
+        <input type="text" name="medicinedose" placeholder="Dose (e.g. 250mg)" required class="border rounded-md p-2 w-full">
+      </div>
+
+      <div>
+        <label class="font-semibold">Frequency:</label><br>
+        <div class="space-x-3 mt-2">
+          {% for val, label in [('1','Every Day'),('2','Every 2 Days'),('3','Every 3 Days')] %}
+            <label><input type="radio" name="frequency" value="{{ val }}" required> {{ label }}</label>
+          {% endfor %}
+          <label><input type="radio" name="frequency" value="other" onclick="toggleOther('frequency')"> Custom</label>
+        </div>
+        <input type="text" name="custom_frequency" id="frequency-other" placeholder="Custom frequency" class="hidden border rounded-md p-2 w-full mt-2">
+      </div>
+
+      <div>
+        <label class="font-semibold">Time of Day:</label><br>
+        <div class="space-x-3 mt-2">
+          {% for val in ['Morning', 'Afternoon', 'Evening', 'Night'] %}
+            <label><input type="checkbox" name="time_period" value="{{ val|lower }}"> {{ val }}</label>
+          {% endfor %}
+          <label><input type="checkbox" name="time_period" value="other" onclick="toggleOther('time')"> Custom</label>
+        </div>
+        <input type="text" name="custom_time_period" id="time-other" placeholder="Custom time" class="hidden border rounded-md p-2 w-full mt-2">
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <input type="text" name="medicineduration" placeholder="Duration (e.g. 7 days)" required class="border rounded-md p-2 w-full">
+        <input type="text" name="notes" placeholder="Notes (optional)" class="border rounded-md p-2 w-full">
+      </div>
+
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Submit</button>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- Tabs: Medication & Images -->
+  <div class="tabs bg-white shadow rounded-lg p-6">
+    <div class="flex border-b mb-4">
+      <button class="tab-btn active" data-tab="medication-tab">Medication</button>
+      <button class="tab-btn" data-tab="images-tab">Images</button>
+    </div>
+
+    <!-- Medication Tab -->
+    <div class="tab-content active" id="medication-tab">
+      {% if daily_medicines %}
+        {% for date, meds in daily_medicines %}
+          <h3 class="font-semibold mt-4">{{ date|date:"l, d M Y" }}</h3>
+          <table class="med-table w-full border mt-2">
+            <thead class="bg-gray-100">
+              <tr>
+                <th>Medicine</th><th>Dose</th><th>Frequency</th><th>Time</th><th>Duration</th><th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for med in meds %}
+                <tr>
+                  <td>{{ med.medicine.name }}</td>
+                  <td>{{ med.medicine.dose }}</td>
+                  <td>{{ med.medicine.frequency }}</td>
+                  <td>{{ med.medicine.time_period }}</td>
+                  <td>{{ med.medicine.duration }}</td>
+                  <td>{{ med.medicine.notes }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         {% endfor %}
-        
+      {% else %}
+        <p>No medicines prescribed yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Images Tab -->
+    <div class="tab-content" id="images-tab">
+      {% if patient.images.all %}
+        {% with patient.images.all|dictsortreversed:"uploaded_at" as sorted_images %}
+          {% regroup sorted_images by uploaded_at.date as image_days %}
+          {% for day in image_days %}
+            <h3 class="font-semibold mt-4">{{ day.grouper|date:"l, d M Y" }}</h3>
+            <div class="image-gallery flex flex-wrap gap-4">
+              {% for img in day.list|dictsortreversed:"uploaded_at" %}
+                <div class="img-container cursor-pointer" onclick="openModal('{{ img.image.url }}')">
+                  <img src="{{ img.image.url }}" alt="Patient Image" class="rounded-md w-64 h-64 object-cover">
+                  <p class="text-xs text-center text-gray-500 mt-1">{{ img.uploaded_at|date:"H:i:s" }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
         {% endwith %}
-    {% else %}
+      {% else %}
         <p>No images uploaded.</p>
-    {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
 </div>
 
+<!-- Image Modal -->
 <div id="imageModal" class="modal" onclick="closeModal()">
   <span class="close">&times;</span>
   <img class="modal-content" id="modalImage">
 </div>
 
+{% endblock %}
 
-  <div class="tab-content active" id="medication-tab">
-    <h3>Medication History</h3>
-  
-    {% if daily_medicines %}
-    {% for date, meds in daily_medicines %}
-      <h3>{{ date|date:"l, d M Y" }}</h3>
-      <table border="1" cellspacing="0" cellpadding="8">
-        <tr>
-          <th>Medicine</th>
-          <th>Dose</th>
-          <th>Frequency</th>
-          <th>Time</th>
-          <th>Duration</th>
-          <th>Notes</th>
-        </tr>
-        {% for med in meds %}
-          <tr>
-            <td>{{ med.medicine.name }}</td>
-            <td>{{ med.medicine.dose }}</td>
-            <td>{{ med.medicine.frequency }}</td>
-            <td>{{ med.medicine.time_period }}</td>
-            <td>{{ med.medicine.duration }}</td>
-            <td>{{ med.medicine.notes }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-      <br>
-    {% endfor %}
-  {% else %}
-    <p>No medicines prescribed yet.</p>
-  {% endif %}
-
-  <script>
-    function openModal(src) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-      modal.style.display = "block";
-      modalImg.src = src;
-    }
-    
-    function closeModal() {
-      document.getElementById("imageModal").style.display = "none";
-    }
-    </script>
-    
-  
-<style>
-/* Modal */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed;
-  z-index: 1000;
-  padding-top: 60px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.8);
-}
-
-.modal-content {
-  margin: auto;
-  display: block;
-  max-width: 95%;
-  max-height: 90%;
-  border-radius: 6px;
-}
-
-@media screen and (max-width: 768px) {
-  .modal-content {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-}
-
-.close {
-  position: absolute;
-  top: 30px;
-  right: 40px;
-  color: #fff;
-  font-size: 40px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.tabs {
-  width: 100%;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
-}
-
-.tab-buttons {
-  display: flex;
-  border-bottom: 2px solid #ccc;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 12px;
-  cursor: pointer;
-  background: #f5f5f5;
-  border: none;
-  outline: none;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-
-.tab-btn:hover {
-  background: #e0e0e0;
-}
-
-.tab-btn.active {
-  background: #fff;
-  border-bottom: 2px solid #007BFF;
-  color: #007BFF;
-}
-
-.tab-content {
-  display: none;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-.image-feed {
-  max-height: 500px;  /* full scrollable section */
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.image-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.img-container {
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.img-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.img-container p {
-  font-size: 15px;
-  text-align: center;
-  margin: 3px 0 0 0;
-  color: #555;
-}
-
-
-/* Medication Table */
-.med-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.med-table th, .med-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-.med-table th {
-  background: #f0f0f0;
-}
-
-  </style>
+{% block extra_js %}
 <script>
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-  
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-  
-      tabContents.forEach(c => c.classList.remove('active'));
-      const tabId = btn.getAttribute('data-tab');
-      document.getElementById(tabId).classList.add('active');
-    });
-  });
-  </script>
+function toggleOther(type) {
+  const field = document.getElementById(`${type}-other`);
+  field.classList.toggle('hidden');
+  field.required = !field.classList.contains('hidden');
+}
 
-  </div>
-</div>
+// Tabs
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+tabButtons.forEach(btn => btn.addEventListener('click', () => {
+  tabButtons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tabContents.forEach(c => c.classList.remove('active'));
+  document.getElementById(btn.dataset.tab).classList.add('active');
+}));
 
+// Camera
+const video = document.getElementById("camera");
+const canvas = document.getElementById("canvas");
+const startBtn = document.getElementById("startCamera");
+const captureBtn = document.getElementById("capture");
+const form = document.getElementById("uploadForm");
+const statusDiv = document.getElementById("upload-status");
+let stream = null;
 
-<br><br>
-<br><br>
-<a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
-<br>
-<button><a href="{% url 'logout' %}">Logout</a><br></button>
+if (startBtn) {
+  startBtn.onclick = async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      captureBtn.style.display = "inline-block";
+      startBtn.style.display = "none";
+    } catch {
+      alert("Camera access denied.");
+    }
+  };
 
-{% endblock content %}
+  captureBtn.onclick = () => {
+    const ctx = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    stream.getTracks().forEach(track => track.stop());
+
+    canvas.toBlob(async blob => {
+      const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
+      const formData = new FormData();
+      formData.append("image", file);
+
+      statusDiv.innerText = "📤 Uploading...";
+      const response = await fetch("", { method: "POST", body: formData });
+      statusDiv.innerText = response.ok ? "✅ Uploaded! Reloading..." : "❌ Failed.";
+      if (response.ok) setTimeout(() => window.location.reload(), 1500);
+    }, "image/jpeg");
+  };
+}
+</script>
+{% endblock %}
+

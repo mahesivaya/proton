@@ -1,78 +1,83 @@
-<<<<<<< Updated upstream
 {% extends 'base.html' %}
-=======
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  </head>
+{% block title %}Admin Dashboard{% endblock %}
 
-<body
-<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
+{% block content %}
+<div class="container mx-auto py-10">
+  
+  <!-- Header Buttons -->
+  <div class="flex justify-between items-center mb-6">
+    <a href="{% url 'reception_dashboard' %}" 
+       class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
+       ← Home
+    </a>
 
-<div style="text-align:right; margin-bottom: 10px;">
     <button onclick="window.location.href='{% url 'chat_room' %}'"
-            style="padding:10px 15px; background:#007bff; color:white; border:none; border-radius:6px;">
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
         💬 Reception Chat
     </button>
+  </div>
+
+  <!-- Welcome Section -->
+  <div class="text-center mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">
+      Welcome, {{ request.user.username }} — Admin Dashboard
+    </h2>
+  </div>
+
+  <!-- Appointments Table -->
+  <div class="overflow-x-auto bg-white shadow rounded-lg p-6">
+    <h3 class="text-xl font-semibold mb-4 text-gray-700">Appointments</h3>
+
+    <table class="w-full border-collapse border border-gray-300 text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="border border-gray-300 px-4 py-2 text-left">Patient ID</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">First Name</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">Last Name</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">Age</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">Gender</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">Registered On</th>
+          <th class="border border-gray-300 px-4 py-2 text-left">More Details</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for appointment in all_appointments %}
+          <tr class="hover:bg-gray-50">
+            <td class="border border-gray-300 px-4 py-2">{{ appointment.patient.patient_id }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ appointment.patient.first_name }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ appointment.patient.last_name }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ appointment.patient.age }}</td>
+            <td class="border border-gray-300 px-4 py-2 capitalize">{{ appointment.patient.gender }}</td>
+            <td class="border border-gray-300 px-4 py-2">
+              {{ appointment.patient.registered_at|date:"Y-m-d H:i" }}
+            </td>
+            <td class="border border-gray-300 px-4 py-2">
+              <a href="{% url 'patient_details' appointment.patient.patient_id %}" 
+                 class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                Details
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-gray-500">No appointments yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Logout -->
+  <div class="text-center mt-10">
+    <a href="{% url 'logout' %}" 
+       class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow">
+       Logout
+    </a>
+  </div>
+
 </div>
+{% endblock %}
 
-
->>>>>>> Stashed changes
-{% block content %}
-
-<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
-<div class="card mx-auto text-center" style="max-width: 400px;">
-    <div class="card-body">
-        <h3 class="card-title">Welcome, {{request.user.username}} Reception dashboard!</h3>
-        <br><br>
-        <P>Appointments</P>
-        <table border="1" cellpadding="8" cellspacing="0">
-            <thead>
-              <tr>
-                <th>Patient ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>age</th>
-                <th>Gender</th>
-                <th>Registered On</th>
-                <th>More Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for appointment in all_appointments %}
-                <tr>
-                  <td>{{ appointment.patient.patient_id }}</td>
-                  <td>{{ appointment.patient.first_name }}</td>
-                  <td>{{ appointment.patient.last_name }}</td>
-                  <td>{{ appointment.patient.age }}</td>
-                  <td>{{ appointment.patient.gender }}</td>
-                  <td>{{ appointment.patient.registered_at|date:"Y-m-d H:i" }}</td>
-                  <td>
-                    <a href="{% url 'patient_details' appointment.patient.patient_id %}">
-                    <button type="button">Details</button></a></tr>
-                </tr>
-              {% empty %}
-                <tr><td colspan="7">No patients registered yet.</td></tr>
-                <tr class="collapse" id="details/{{ patient.id }}">
-                    <td colspan="5">
-                      <div class="card card-body">
-                        <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
-                        <p><strong>Registered On:</strong> {{ patient.created_at|date:"Y-m-d H:i" }}</p>
-                      </div>
-                    </td>
-                  </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-        <br><br>
-        <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
-    </div>
-</div>
-{% endblock content %}
