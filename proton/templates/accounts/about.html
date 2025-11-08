@@ -1,0 +1,46 @@
+{% extends 'base.html' %}   
+{% block content %}
+{% load static %}
+      <h2 class="text-3xl font-semibold mb-8">Our Mission & Vision</h2>
+      <div class="flex flex-col md:flex-row justify-center gap-8">
+        <div class="bg-white rounded-lg shadow p-6 md:w-1/3">
+          <h3 class="text-xl font-bold mb-2">Our Mission</h3>
+          <p class="text-gray-700">
+            To provide a wide range of skin care services to the community, ensuring the highest standards of service and satisfaction.
+          </p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 md:w-1/3">
+          <h3 class="text-xl font-bold mb-2">Our Vision</h3>
+          <p class="text-gray-700">
+            To be recognized as a leading skin clinic in the community, providing the highest standards of service and satisfaction.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="py-12 bg-white">
+    <div class="container mx-auto text-center">
+      <h2 class="text-3xl font-semibold mb-8">Meet Our Team</h2>
+      <div class="flex flex-wrap justify-center gap-8">
+        <div class="w-64 bg-gray-50 rounded-lg shadow p-4">
+          <img src="{% static 'images/ram_profile_pic.jpeg' %}" alt="Doctor" class="w-full rounded-lg mb-4">
+          <h3 class="text-xl font-bold">Dr. Ram Kumar</h3>
+          <p class="text-gray-600">Skin Specialist</p>
+        </div>
+        <div class="w-64 bg-gray-50 rounded-lg shadow p-4">
+          <img src="{% static 'images/aura_logo.jpeg' %}" alt="Doctor" class="w-full rounded-lg mb-4">
+          <h3 class="text-xl font-bold">Dr. Kavitha</h3>
+          <p class="text-gray-600">Skin Specialist</p>
+        </div>
+        <div class="w-64 bg-gray-50 rounded-lg shadow p-4">
+          <img src="{% static 'images/aura_logo.jpeg' %}" alt="Doctor" class="w-full rounded-lg mb-4">
+          <h3 class="text-xl font-bold">Staff Member</h3>
+          <p class="text-gray-600">Staff Member</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock content %}

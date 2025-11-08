@@ -21,7 +21,7 @@ def redirect_to_role_home(user):
     if redirect_url:
         return redirect(redirect_url)
     else:
-        return redirect('login')
+        return redirect('home')
 
 def login_view(request):
     if request.method == 'POST':
@@ -42,7 +42,7 @@ def logout_view(request):
     from django.contrib.auth import logout
     logout(request)
     messages.info(request, "You have logged out.")
-    return redirect('login')
+    return redirect('home')
 
 
 @role_required(allowed_roles=['admin'])
@@ -59,3 +59,19 @@ def redirect_to_home(request):
     """Redirect logged-in users to their dashboard based on role."""
     user = request.user
     return redirect_to_role_home(user)
+
+
+
+from django.shortcuts import render
+
+def about(request):
+    return render(request, "accounts/about.html")
+
+def treatment(request):
+    return render(request, "accounts/treatment.html")
+
+def contact(request):
+    return render(request, "accounts/contact.html")
+
+def home(request):
+    return render(request, "accounts/home.html")

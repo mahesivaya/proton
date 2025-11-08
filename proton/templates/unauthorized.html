@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+{% block content %} 
 <html>
 <head>
     <title>Unauthorized</title>
@@ -6,6 +7,6 @@
 <body>
     <h2>Access Denied</h2>
     <p>You are not authorized to view this page.</p>
-    <a href="{% url 'login' %}">Go to Login</a>
+    <a href="{% url 'home' %}">Go to Login</a>
 </body>
-</html>
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h2 class="text-3xl font-semibold mb-6 text-center">Contact Us</h2>
+  <form class="max-w-lg mx-auto bg-white p-6 rounded shadow space-y-4" id="contactForm">
+    <input type="text" name="name" placeholder="Your Name" class="w-full border px-3 py-2 rounded" required>
+    <input type="email" name="email" placeholder="Your Email" class="w-full border px-3 py-2 rounded" required>
+    <textarea name="message" placeholder="Your Message" class="w-full border px-3 py-2 rounded" rows="4" required></textarea>
+    <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">Send Message</button>
+    <p id="successMsg" class="text-green-600 hidden mt-2">Message sent successfully!</p>
+  </form>
+  <br>
+    <div class="container mx-auto text-center">
+      <p>Address:</p>
+      <p>12-21-12, Ground floor, 
+        opposite Fire station, Aryapuram, 
+        Rajamahendravaram, Andhra Pradesh 533104, India</p>
+      <p>Phone: +91 73863 55210</p>
+    </div>
+
+
+</body>
+{% endblock content %}

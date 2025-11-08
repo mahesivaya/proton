@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<body class="bg-gray-100">
+  <main class="py-8 container mx-auto">
+    {% block content %}
+    <img src="{% static 'images/home_page.jpeg' %}" alt="Doctor" class="w-full rounded-lg mb-4">
+    {% endblock %}
+  </main>
+</body>
+

@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Aura Skin Clinic{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script defer src="{% static 'js/main.js' %}"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-700 text-white shadow p-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      
+      <!-- Logo -->
+      <div class="flex items-center space-x-2">
+        <img src="{% static 'images/aura_logo.jpeg' %}" alt="Aura Skin Clinic Logo" class="h-10 w-10">
+        <h1 class="text-2xl font-bold text-white">Aura Skin Clinic</h1>
+      </div>
+
+      <!-- Navigation Links (desktop) -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
+        <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
+        <a href="{% url 'treatment' %}" class="hover:text-gray-300">Treatment</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}"
+       class="bg-red-600 text-white font-semibold px-4 py-1 rounded-lg hover:bg-red-700 transition">
+      Logout
+    </a>
+  </div>
+{% elif request.path != '/login/' %}
+  <a href="{% url 'login' %}" 
+     class="ml-4 bg-white text-blue-700 font-semibold px-4 py-1 rounded-lg hover:bg-gray-100 transition">
+    Login
+  </a>
+{% endif %}
+        <!-- <a href="{% url 'login' %}" class="hover:text-gray-300">Login Page</a> -->
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="menu-btn" class="md:hidden text-white focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-blue-600">
+      <nav class="flex flex-col items-center space-y-3 py-4 text-white font-medium">
+        <a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
+        <a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
+        <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
+        <a href="{% url 'treatment' %}" class="hover:text-gray-300">Treatment</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}"
+       class="bg-red-600 text-white font-semibold px-4 py-1 rounded-lg hover:bg-red-700 transition">
+      Logout
+    </a>
+  </div>
+{% elif request.path != '/login/' %}
+  <a href="{% url 'login' %}" 
+     class="ml-4 bg-white text-blue-700 font-semibold px-4 py-1 rounded-lg hover:bg-gray-100 transition">
+    Login
+  </a>
+{% endif %}
+        
+        
+
+      </nav>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+<main class="py-8 container mx-auto">
+    {% block content %}
+    <img src="{% static 'images/ram_profile_image.jpeg' %}" alt="Doctor" class="w-full rounded-lg mb-4">
+    {% endblock %}
+</main>
+
+
+  <!-- Footer -->
+  <footer class="bg-blue-700 text-white py-6 mt-12 text-center">
+    &copy; 2025 Aura Skin Clinic. All rights reserved.
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById("menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+    });
+  </script>
+
+</body>
+</html>
