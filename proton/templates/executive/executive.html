@@ -1,26 +1,117 @@
 {% extends 'base.html' %}
 {% block content %}
+
+<style>
+  /* General button link style */
+  .btn-link {
+    display: inline-block;
+    background-color: #007bff;  /* Blue background */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-link:hover {
+    background-color: #0056b3;  /* Darker blue on hover */
+  }
+
+  /* For logout button */
+  .logout-btn {
+    display: inline-block;
+    background-color: #dc3545; /* Red */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+
+  .logout-btn:hover {
+    background-color: #b52a37;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  h4, h3, h2 {
+    margin-top: 25px;
+  }
+</style>
+
 <h4>Patients by Year 2025</h4>
-<a href="{% url 'yearly_patients' year=2025 %}">2025 Year Patients</a>
+<a href="{% url 'yearly_patients' year=2025 %}" class="btn-link">2025 Year Patients</a>
+
 <br><br>
+
+<style>
+  .btn-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;           /* Smaller buttons */
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;             /* Smaller text */
+    margin: 4px;                 /* Space between buttons */
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-link:hover {
+    background-color: #0056b3;
+  }
+
+  .month-buttons {
+    display: flex;
+    flex-wrap: wrap;             /* Wrap buttons to next line if needed */
+    gap: 6px;                    /* Space between buttons */
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  h3 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+  }
+</style>
+
 <h4>Patients by Year & Month</h4>
 {% for year, months in years_months.items %}
   <h3>{{ year }}</h3>
-  <ul>
+  <div class="month-buttons">
     {% for m in months %}
-      <li>
-        <a href="{% url 'monthly_patients' year=year month=m.month %}">
-          {{ m.month_name }} {{ year }}
-        </a>
-      </li>
+      <a href="{% url 'monthly_patients' year=year month=m.month %}" class="btn-link">
+        {{ m.month_name }} {{ year }}
+      </a>
     {% endfor %}
-  </ul>
+  </div>
 {% endfor %}
 
 <br><br><br>
-<h2>Patient Registrations by Month</h2>
 
-<table border="1" cellpadding="8">
+<h2>Patient Registrations by Month</h2>
+<table>
   <tr>
     <th>Year</th>
     <th>Month</th>
@@ -31,7 +122,7 @@
     <tr>
       <td>{{ row.year }}</td>
       <td>
-        <a href="{% url 'monthly_patients' year=row.year month=row.month %}">
+        <a href="{% url 'monthly_patients' year=row.year month=row.month %}" class="btn-link">
           {{ row.month_name }}
         </a>
       </td>
@@ -43,23 +134,22 @@
 </table>
 
 <h3>Patients by Age Group</h3>
-
-<table border="1" cellpadding="5">
-    <tr><th>Age Group</th><th>Total</th></tr>
-    <tr><td>0-12</td><td>{{ age_groups.children }}</td></tr>
-    <tr><td>13-19</td><td>{{ age_groups.teens }}</td></tr>
-    <tr><td>20-40</td><td>{{ age_groups.adults }}</td></tr>
-    <tr><td>41-60</td><td>{{ age_groups.middle_age }}</td></tr>
-    <tr><td>60+</td><td>{{ age_groups.seniors }}</td></tr>
+<table>
+  <tr><th>Age Group</th><th>Total</th></tr>
+  <tr><td>0-12</td><td>{{ age_groups.children }}</td></tr>
+  <tr><td>13-19</td><td>{{ age_groups.teens }}</td></tr>
+  <tr><td>20-40</td><td>{{ age_groups.adults }}</td></tr>
+  <tr><td>41-60</td><td>{{ age_groups.middle_age }}</td></tr>
+  <tr><td>60+</td><td>{{ age_groups.seniors }}</td></tr>
 </table>
 
 <br>
-<table border="1">
+
+<table>
   <tr>
       <th>Visit Reason</th>
       <th>Count</th>
   </tr>
-
   {% for row in visit_reason_group %}
   <tr>
       <td>{{ row.visit_reason }}</td>
@@ -68,32 +158,8 @@
   {% endfor %}
 </table>
 
+<br><br>
+<a href="{% url 'logout' %}" class="logout-btn">Logout</a>
 
-<br><br>
-<!-- <h3>Patients Registered Per Day</h3>
-<table border="1" cellpadding="8" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Total Patients</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in patients_per_day %}
-        <tr>
-            <td>{{ entry.registration_date }}</td>
-            <td>{{ entry.total_patients }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="2">No patient records found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table> -->
-</body>
-<br><br>
-<br>
-<button><a href="{% url 'logout' %}">Logout</a><br></button>
-</body>
 {% endblock content %}
+

@@ -1,14 +1,63 @@
 {% extends 'base.html' %}
 {% block content %}
-      <form method="post">
-          {% csrf_token %}
-          <label>Username:
-          <input type="text" name="username" required><br><br>
-        </label>
-          <label>Password:
-          <input type="password" name="password" required><br><br>
-        </label>
-          <button type="submit">Login</button>
-      </form>
-  
+
+<style>
+  .login-btn {
+    background-color: #007bff;   /* Blue background */
+    color: white;                /* White text */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background-color: #0056b3;   /* Darker blue on hover */
+  }
+
+  form {
+    max-width: 350px;
+    margin: 80px auto;
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  label {
+    display: block;
+    text-align: left;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+</style>
+
+<form method="post">
+  {% csrf_token %}
+  <label>Username:
+    <input type="text" name="username" required>
+  </label>
+
+  <label>Password:
+    <input type="password" name="password" required>
+  </label>
+
+  <br>
+  <button type="submit" class="login-btn">Login</button>
+</form>
+
 {% endblock content %}
+
