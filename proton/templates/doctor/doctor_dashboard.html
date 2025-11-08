@@ -1,4 +1,29 @@
+<<<<<<< Updated upstream
 {% extends 'base.html' %}
+=======
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+
+<body
+<a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
+
+<div style="text-align:right; margin-bottom: 10px;">
+    <button onclick="window.location.href='{% url 'chat_room' %}'"
+            style="padding:10px 15px; background:#007bff; color:white; border:none; border-radius:6px;">
+        💬 Reception Chat
+    </button>
+</div>
+
+
+>>>>>>> Stashed changes
 {% block content %}
 
 <a href="{% url 'reception_dashboard' %}" class="btn btn-danger mt-3">Home</a>
@@ -45,7 +70,6 @@
               {% endfor %}
             </tbody>
           </table>
-          <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
 
         <br><br>
         <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>

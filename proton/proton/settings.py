@@ -95,6 +95,7 @@ CHANNEL_LAYERS = {
     },
 }
 
+from channels.auth import AuthMiddlewareStack
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

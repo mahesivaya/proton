@@ -13,6 +13,10 @@ wheels/
 .viminfo
 .gitconfig
 
+.cache
+.cursor
+.cursor-server
+.vscode-server/
 # Virtual environments
 .venv
 

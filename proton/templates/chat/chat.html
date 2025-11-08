@@ -51,7 +51,10 @@
 
 <input id="chat-message-input" type="text" placeholder="Type a message..." autocomplete="off"/>
 <button id="chat-message-submit">Send</button>
-
+<br><br>
+<a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
+<br>
+<button><a href="{% url 'logout' %}">Logout</a><br></button>
 <script>
     // ✅ Get username from Django context
     const username = "{{ request.user.username }}";

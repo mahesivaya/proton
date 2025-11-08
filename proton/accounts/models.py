@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.forms import IntegerField
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
@@ -177,3 +178,4 @@ class PatientImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.patient.patient_id} ({self.uploaded_at.strftime('%Y-%m-%d %H:%M')})"
+
