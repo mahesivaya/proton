@@ -69,27 +69,48 @@
         <input type="text" name="medicinedose" placeholder="Dose (e.g. 250mg)" required class="border rounded-md p-2 w-full">
       </div>
 
-      <div>
-        <label class="font-semibold">Frequency:</label><br>
-        <div class="space-x-3 mt-2">
-          {% for val, label in [('1','Every Day'),('2','Every 2 Days'),('3','Every 3 Days')] %}
-            <label><input type="radio" name="frequency" value="{{ val }}" required> {{ label }}</label>
-          {% endfor %}
-          <label><input type="radio" name="frequency" value="other" onclick="toggleOther('frequency')"> Custom</label>
-        </div>
-        <input type="text" name="custom_frequency" id="frequency-other" placeholder="Custom frequency" class="hidden border rounded-md p-2 w-full mt-2">
-      </div>
+<div>
+  <label class="font-semibold">Frequency:</label><br>
+  <div class="space-x-3 mt-2">
+    {% for val, label in frequency_options %}
+      <label>
+        <input type="radio" name="frequency" value="{{ val }}" required> {{ label }}
+      </label>
+    {% endfor %}
+    <label>
+      <input type="radio" name="frequency" value="other" onclick="toggleOther('frequency')"> Custom
+    </label>
+  </div>
+  <input type="text" name="custom_frequency" id="frequency-other" placeholder="Custom frequency" class="hidden border rounded-md p-2 w-full mt-2">
+</div>
 
-      <div>
-        <label class="font-semibold">Time of Day:</label><br>
-        <div class="space-x-3 mt-2">
-          {% for val in ['Morning', 'Afternoon', 'Evening', 'Night'] %}
-            <label><input type="checkbox" name="time_period" value="{{ val|lower }}"> {{ val }}</label>
-          {% endfor %}
-          <label><input type="checkbox" name="time_period" value="other" onclick="toggleOther('time')"> Custom</label>
-        </div>
-        <input type="text" name="custom_time_period" id="time-other" placeholder="Custom time" class="hidden border rounded-md p-2 w-full mt-2">
-      </div>
+<div>
+  <label class="font-semibold">Time of Day:</label><br>
+  <div class="space-x-3 mt-2">
+    {% for val in time_options %}
+      <label>
+        <input type="checkbox" name="time_period" value="{{ val|lower }}"> {{ val }}
+      </label>
+    {% endfor %}
+    <label>
+      <input type="checkbox" name="time_period" value="other" onclick="toggleOther('time')"> Custom
+    </label>
+  </div>
+  <input type="text" name="custom_time_period" id="time-other" placeholder="Custom time" class="hidden border rounded-md p-2 w-full mt-2">
+</div>
+
+<script>
+function toggleOther(type) {
+  const input = document.getElementById(`${type}-other`);
+  input.classList.toggle('hidden');
+  if (!input.classList.contains('hidden')) {
+    input.required = true;
+  } else {
+    input.required = false;
+    input.value = '';
+  }
+}
+</script>
 
       <div class="grid md:grid-cols-2 gap-4">
         <input type="text" name="medicineduration" placeholder="Duration (e.g. 7 days)" required class="border rounded-md p-2 w-full">

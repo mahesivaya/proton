@@ -67,47 +67,34 @@ def reception_dashboard(request):
 
 from collections import defaultdict
 
-@role_required(allowed_roles=['reception', 'doctor'])
+@role_required(allowed_roles=['doctor', 'reception'])
 @login_required
 def patient_details(request, patient_id):
-    try:
-        patient = Patient.objects.get(patient_id=patient_id)
-        #patient_records = PatientRecord.objects.get(patient_id = patient_id)
-        patient_medicine = PatientMedicine.objects.filter(patient_id=patient_id).order_by('-created_at')
-        daily_medicines = defaultdict(list)
-        for med in patient_medicine:
-            date = med.created_at.date()  # only date part
-            daily_medicines[date].append(med)
-
-    # Sort dates descending
-        sorted_daily_medicines = sorted(daily_medicines.items(), key=lambda x: x[0], reverse=True)
-
-    except Patient.DoesNotExist:
-        messages.error(request, "Patient not found")
-        return redirect('reception_dashboard')
     patient = get_object_or_404(Patient, patient_id=patient_id)
 
-    if request.method == "POST":
-        print("FILES:", request.FILES)
+    # Medicine options
+    frequency_options = [
+        ('1', 'Every Day'),
+        ('2', 'Every 2 Days'),
+        ('3', 'Every 3 Days')
+    ]
+    time_options = ['Morning', 'Afternoon', 'Evening', 'Night']
 
-        if request.FILES.get("image"):
-            description = request.POST.get("description", "")
-            PatientImage.objects.create(
-                patient=patient,
-                image=request.FILES["image"],
-                description=description
-            )
-            messages.success(request, "Image uploaded successfully!")
-            return redirect("patient_details", patient_id=patient.patient_id)
-        else:
-            messages.error(request, "No image received!")
-
+    # ...existing code for medicines, images, etc...
+    patient_medicines = PatientMedicine.objects.filter(patient_id=patient_id).order_by('-created_at')
+    daily_medicines = defaultdict(list)
+    for med in patient_medicines:
+        daily_medicines[med.created_at.date()].append(med)
+    sorted_daily_medicines = sorted(daily_medicines.items(), key=lambda x: x[0], reverse=True)
     patient_images = patient.images.order_by('-uploaded_at')
+
     context = {
         "patient": patient,
-        "patient_medicine": patient_medicine,
+        "patient_medicine": patient_medicines,
         "daily_medicines": sorted_daily_medicines,
         "patient_images": patient_images,
+        "frequency_options": frequency_options,
+        "time_options": time_options,
     }
     return render(request, 'reception/patient_details.html', context)
 
