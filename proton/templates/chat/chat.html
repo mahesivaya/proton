@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
 <head>
     <meta charset="UTF-8">
     <title>Clinic Chat Room</title>
@@ -50,8 +53,25 @@
 <div id="chat-log"></div>
 
 <input id="chat-message-input" type="text" placeholder="Type a message..." autocomplete="off"/>
-<button id="chat-message-submit">Send</button>
+<button id="chat-message-submit" class="login-btn">Send</button>
 <br><br>
+<style>
+    .login-btn {
+      background-color: #007bff;   /* Blue background */
+      color: white;                /* White text */
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    .login-btn:hover {
+      background-color: #0056b3;   /* Darker blue on hover */
+    }
+    </style>  
 <a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
 <br>
 <button><a href="{% url 'logout' %}">Logout</a><br></button>
@@ -116,5 +136,5 @@
 </script>
 
 </body>
-</html>
 
+{% endblock %}
