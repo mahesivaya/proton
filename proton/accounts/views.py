@@ -1,9 +1,12 @@
+import datetime
+import email
 from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .decorators import role_required
+from accounts.models import Patient, ScheduleAppointment
 
 
 ROLE_REDIRECTS = {
@@ -75,3 +78,41 @@ def contact(request):
 
 def home(request):
     return render(request, "accounts/home.html")
+
+def appointment(request):
+    if request.method == 'POST':
+        # Handle form submission
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        age = request.POST.get('age')
+        gender = request.POST.get('gender')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        visit_reason = request.POST.get('visit_reason')
+        referral = request.POST.get('referral')
+        registered_at = request.POST.get('registered_at')
+        print("📞 Phone received:", phone_number)
+
+        if not phone_number:
+            messages.error(request, "Phone number is required.")
+
+        patient = Patient.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            age=age,
+            gender=gender,
+            email=email,
+            phone_number=phone_number,
+            visit_reason=visit_reason,
+            referral=referral,
+        )
+        patient.save()
+        appointment = ScheduleAppointment.objects.create(
+            patient=patient,
+            appointment_date=registered_at,
+            reason=visit_reason
+        )
+        appointment.save()
+        return redirect('home')
+
+    return render(request, "accounts/appointment.html")

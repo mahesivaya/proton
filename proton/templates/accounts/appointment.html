@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Treatment{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Appointments</h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+
+<div class="bg-white shadow-md p-6 rounded mb-8">
+    <h3 class="text-lg font-semibold mb-4">📝 Book Appointment</h3>
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% csrf_token %}
+      <label>
+        <span>First Name</span>
+        <input type="text" name="first_name" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Last Name</span>
+        <input type="text" name="last_name" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Age</span>
+        <input type="number" name="age" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Gender</span><br>
+        <input type="radio" name="gender" value="Male" required> Male
+        <input type="radio" name="gender" value="Female" required> Female
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Phone</span>
+        <input type="text" name="phone_number" required class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Address</span>
+        <input type="text" name="address" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Visit Reason</span>
+        <input type="text" name="visit_reason" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Referral(optional)</span>
+        <input type="text" name="referral" class="w-full border rounded px-2 py-1">
+      </label>
+      <label>
+        <span>Date&Time</span>
+        <input type="text" id="datetime" name="registered_at" placeholder="Select date & time">
+        <script>
+          flatpickr("#datetime", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today"
+          });
+        </script>
+      </label>
+      <div class="md:col-span-2">
+        <input type="submit" value="Register" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      </div>
+    </form>
+  </div>
+
+{% endblock %}

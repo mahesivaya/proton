@@ -65,7 +65,7 @@ class Patient(models.Model):
     age = models.IntegerField()
     gender = models.CharField(max_length=100, default='Not Specified')
     email = models.EmailField(default='Not Specified')
-    phone_number = models.IntegerField()
+    phone_number = models.BigIntegerField()
     address = models.CharField(max_length=255)
     visit_reason = models.CharField(max_length=255, default='General Consultation')
     referral = models.CharField(max_length=255)

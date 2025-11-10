@@ -27,6 +27,7 @@
         <a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
         <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
         <a href="{% url 'treatment' %}" class="hover:text-gray-300">Treatment</a>
+        <a href="{% url 'appointment' %}" class="hover:text-gray-300">Appointment</a>
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}"
        class="bg-red-600 text-white font-semibold px-4 py-1 rounded-lg hover:bg-red-700 transition">
@@ -59,6 +60,7 @@
         <a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
         <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
         <a href="{% url 'treatment' %}" class="hover:text-gray-300">Treatment</a>
+        <a href="{% url 'appointment' %}" class="hover:text-gray-300">Appointment</a>
         {% if user.is_authenticated %}
             <a href="{% url 'logout' %}"
        class="bg-red-600 text-white font-semibold px-4 py-1 rounded-lg hover:bg-red-700 transition">
