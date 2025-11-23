@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.middleware.csrf import CSRF_ALLOWED_CHARS
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +28,8 @@ SECRET_KEY = 'django-insecure-5#m)duvr=v$e%1lv9c8i59in9+w4e&f!624hl$&mtho!xk=gvq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['avariadic.com', 'www.avariadic.com']
+# ALLOWED_HOSTS = ['avariadic.com', 'www.avariadic.com']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'pharmacy',
     'chat',
     'channels',
+    'patient'
 ]
 
 MIDDLEWARE = [
@@ -57,10 +61,12 @@ MIDDLEWARE = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://avariadic.com',
-    'https://avariadic.com',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     'http://avariadic.com',
+#     'https://avariadic.com',
+# ]
+
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
 
 ROOT_URLCONF = 'proton.urls'
 
@@ -84,7 +90,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'proton.wsgi.application'
 
 
-ASGI_APPLICATION = "protonproj.asgi.application"
+ASGI_APPLICATION = "proton.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -97,25 +103,14 @@ CHANNEL_LAYERS = {
 
 from channels.auth import AuthMiddlewareStack
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
-
-
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'awsprotondb',                          # same as RDS DB name
-        'USER': 'postgres',                        # RDS username
-        'PASSWORD': 'postgres',                # RDS password
-        'HOST': 'protoninstance.c12uyc8448br.us-east-1.rds.amazonaws.com',  # RDS endpoint
+        'NAME': 'protondb',                          # same as RDS DB name
+        'USER': 'maheshproton',                        # RDS username
+        'PASSWORD': 'MaheshG1990',                # RDS password
+        'HOST': 'localhost',  # RDS endpoint
         'PORT': '5432',
     }
 }

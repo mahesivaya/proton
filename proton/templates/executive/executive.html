@@ -53,7 +53,11 @@
   h4, h3, h2 {
     margin-top: 25px;
   }
-</style>
+</style>  
+
+<h4>Website Visitors count</h4>
+<p>Total Visitors: {{ website_visitors }}</p>
+
 
 <h4>Patients by Year 2025</h4>
 <a href="{% url 'yearly_patients' year=2025 %}" class="btn-link">2025 Year Patients</a>
@@ -95,6 +99,8 @@
     margin-bottom: 5px;
   }
 </style>
+
+
 
 <h4>Patients by Year & Month</h4>
 {% for year, months in years_months.items %}
