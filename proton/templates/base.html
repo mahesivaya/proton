@@ -28,6 +28,11 @@
 	{% else %}
 	<a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
 	{% endif %}
+	{% if user.is_authenticated%}
+        <a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
+	{% else %}
+	<a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
+	{% endif %}
         <a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
         <a href="{% url 'contact' %}" class="hover:text-gray-300">Contact</a>
         <a href="{% url 'treatment' %}" class="hover:text-gray-300">Treatment</a>
@@ -61,6 +66,12 @@
     <!-- Mobile Dropdown Menu -->
     <div id="mobile-menu" class="hidden md:hidden bg-blue-600">
       <nav class="flex flex-col items-center space-y-3 py-4 text-white font-medium">
+	 {% if user.is_authenticated%}
+        	<a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
+        {% else %}
+        	<a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
+        {% endif %}
+	<a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
 	 {% if user.is_authenticated%}
         	<a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
         {% else %}
