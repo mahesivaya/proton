@@ -4,17 +4,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from .models import Room, Message, DirectMessage
-from django.contrib.auth import get_user_model
-from .models import Room, Message, DirectMessage
 
 User = get_user_model()
-from .models import ChatMessage
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
-
-    async def connect(self):
-        self.room_name = "clinic_chat"
-        self.room_group_name = f"chat_{self.room_name}"
+    """
+    Public clinic room chat: ws://.../ws/chat/<room_name>/
+    """
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
@@ -31,29 +28,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-    async def receive(self, text_data):
-        print("Raw : ",text_data)
+    async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)
-        message = data.get("message")
-        print("MESSAGE:", message)
+        message = data.get("message", "").strip()
         if not message:
             return
 
-        user = self.scope["user"]
-        print("USER:", user, "AUTH:", user.is_authenticated)
-        # FK value saved in DB
-        chat_user = user if user.is_authenticated else None
+        # Save to DB
+        await self.save_message(self.room_name, self.user, message)
 
-        # String sent to frontend
-        username = user.username if user.is_authenticated else "Guest"
-
-        # Save message to DB
-        await sync_to_async(ChatMessage.objects.create)(
-            username=chat_user,
-            message=message
-        )
-
-        # Send plain JSON to all clients
         await self.channel_layer.group_send(
             self.room_group_name,
             {

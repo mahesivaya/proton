@@ -14,7 +14,7 @@ class Room(models.Model):
 
 class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -27,12 +27,12 @@ class Message(models.Model):
 
 class DirectMessage(models.Model):
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="sent_dms"
     )
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name="received_dms"
     )
@@ -44,3 +44,4 @@ class DirectMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender} -> {self.receiver}: {self.content[:20]}"
+
