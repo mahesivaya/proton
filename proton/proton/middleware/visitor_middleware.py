@@ -17,4 +17,3 @@ class VisitorCountMiddleware(MiddlewareMixin):
             return
 
         VisitorIP.objects.get_or_create(ip_address=ip)
-
