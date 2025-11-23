@@ -1,13 +1,10 @@
 from django.db import models
-from django.conf import settings
+# from django.contrib.auth.models import User
+
+from accounts.models import CustomUser
 
 class ChatMessage(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='chat_messages'
-    )
+    username = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -15,5 +12,4 @@ class ChatMessage(models.Model):
         ordering = ['timestamp']
 
     def __str__(self):
-        return f"{self.user.username if self.user else 'Unknown'}: {self.message[:20]}"
-
+        return f"[{self.timestamp}] {self.username}: {self.message[:30]}"

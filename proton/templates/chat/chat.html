@@ -2,121 +2,159 @@
 {% load static %}
 {% block content %}
 
-
-<head>
-    <meta charset="UTF-8">
-    <title>Clinic Chat Room</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        #chat-log {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 400px;
-            overflow-y: auto;
-            background: #f9f9f9;
-            margin-bottom: 10px;
-        }
-
-        #chat-message-input {
-            width: 80%;
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        #chat-message-submit {
-            width: 18%;
-            padding: 10px;
-            font-size: 14px;
-        }
-
-        .message b {
-            color: #007BFF;
-        }
-
-        /* Optional: mobile responsive */
-        @media (max-width: 600px) {
-            #chat-message-input, #chat-message-submit {
-                width: 100%;
-                margin-top: 5px;
-            }
-        }
-    </style>
-</head>
-<body>
-
 <h2>Clinic Chat Room</h2>
 
+<!-- Chat Log Box -->
 <div id="chat-log"></div>
 
-<input id="chat-message-input" type="text" placeholder="Type a message..." autocomplete="off"/>
-<button id="chat-message-submit" class="login-btn">Send</button>
-<br><br>
+<!-- Message Input -->
+<div style="margin-top: 10px;">
+    <input id="chat-message-input" type="text" placeholder="Type a message..." autocomplete="off"/>
+    <button id="chat-message-submit" class="login-btn">Send</button>
+</div>
+
+<!-- Styles -->
 <style>
+    #chat-log {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 400px;
+        overflow-y: auto;
+        background: #f9f9f9;
+        margin-bottom: 10px;
+        border-radius: 6px;
+    }
+
+    /* Row for each message */
+    .message-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .message-left {
+        justify-content: flex-start;
+    }
+
+    .message-right {
+        justify-content: flex-end;
+    }
+
+    /* Bubble styling */
+    .bubble {
+        max-width: 70%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 8px;
+        line-height: 1.3;
+    }
+
+    .bubble-left {
+        background: #e4eaff;
+        border-radius: 10px 10px 10px 0;
+    }
+
+    .bubble-right {
+        background: #d1ffd6;
+        border-radius: 10px 10px 0 10px;
+        text-align: right;
+    }
+
+    .bubble b {
+        color: #333;
+    }
+
+    #chat-message-input {
+        width: 75%;
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 6px;
+        border: 1px solid #aaa;
+    }
+
     .login-btn {
-      background-color: #007bff;   /* Blue background */
-      color: white;                /* White text */
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-left: 5px;
     }
-  
+
     .login-btn:hover {
-      background-color: #0056b3;   /* Darker blue on hover */
+        background-color: #0056b3;
     }
-    </style>  
-<a href="{% url 'redirect_to_home' %}" class="btn btn-primary">🏠 Back to Home</a>
-<br>
-<button><a href="{% url 'logout' %}">Logout</a><br></button>
+
+    @media (max-width: 600px) {
+        #chat-message-input { width: 100%; margin-bottom: 10px; }
+        .login-btn { width: 100%; }
+    }
+</style>
+
+<!-- JavaScript WebSocket + History -->
 <script>
-    // ✅ Get username from Django context
-    const username = "{{ request.user.username }}";
+window.onload = function () {
 
-    // Fixed shared room for doctor & reception
+    const username = "{{ request.user.username }}";  // logged-in user
     const roomName = "clinic_chat";
-
     const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 
+    const chatLog = document.getElementById("chat-log");
+
+    // ---- Load old messages ----
+    fetch("/chat/history/")
+        .then(response => response.json())
+        .then(messages => {
+
+            messages.forEach(msg => {
+                const mine = msg.username === username;
+                
+                chatLog.innerHTML += `
+                    <div class="message-row ${mine ? 'message-right' : 'message-left'}">
+                        <div class="bubble ${mine ? 'bubble-right' : 'bubble-left'}">
+                            <b>${msg.username}:</b> ${msg.message}
+                        </div>
+                    </div>
+                `;
+            });
+
+            chatLog.scrollTop = chatLog.scrollHeight;
+        });
+
+    // ---- Create WebSocket ----
     const chatSocket = new WebSocket(
-        `${ws_scheme}://${window.location.host}/ws/chat/${roomName}/`
+        `${ws_scheme}://avariadic.com/ws/chat/${roomName}/`
     );
 
-    // When WebSocket opens
-    chatSocket.onopen = function() {
-        console.log("✅ WebSocket connected");
+    chatSocket.onopen = function () {
+        console.log("WebSocket Connected");
     };
 
-    // Receive message from server
-    chatSocket.onmessage = function(e) {
+    chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        const sender = data.username || "Unknown";
-        const message = data.message;
+        const mine = data.username === username;
 
-        const chatLog = document.getElementById("chat-log");
-        chatLog.innerHTML += `<div class="message"><b>${sender}:</b> ${message}</div>`;
-        chatLog.scrollTop = chatLog.scrollHeight;  // scroll to bottom
+        chatLog.innerHTML += `
+            <div class="message-row ${mine ? 'message-right' : 'message-left'}">
+                <div class="bubble ${mine ? 'bubble-right' : 'bubble-left'}">
+                    <b>${data.username}:</b> ${data.message}
+                </div>
+            </div>
+        `;
+        chatLog.scrollTop = chatLog.scrollHeight;
     };
 
-    chatSocket.onclose = function(e) {
-        console.error("❌ WebSocket closed unexpectedly", e);
-    };
+    chatSocket.onclose = () => console.error("WebSocket closed unexpectedly");
+    chatSocket.onerror = (e) => console.error("WebSocket error:", e);
 
-    chatSocket.onerror = function(e) {
-        console.error("⚠️ WebSocket error:", e);
-    };
-
-    // Send message
-    document.getElementById('chat-message-submit').onclick = function(e) {
-        e.preventDefault();
-        const input = document.getElementById('chat-message-input');
+    // ---- Send Message ----
+    document.getElementById("chat-message-submit").onclick = function () {
+        const input = document.getElementById("chat-message-input");
         const message = input.value.trim();
+
         if (!message) return;
 
         chatSocket.send(JSON.stringify({
@@ -124,17 +162,18 @@
             username: username
         }));
 
-        input.value = "";  // clear input
+        input.value = "";
     };
 
-    // Optional: send message on Enter key
-    document.getElementById('chat-message-input').addEventListener("keyup", function(e) {
+    // Enter key sends
+    document.getElementById("chat-message-input").addEventListener("keyup", function (e) {
         if (e.key === "Enter") {
-            document.getElementById('chat-message-submit').click();
+            document.getElementById("chat-message-submit").click();
         }
     });
+
+};
 </script>
 
-</body>
-
 {% endblock %}
+

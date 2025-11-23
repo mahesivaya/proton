@@ -4,7 +4,7 @@ import calendar
 from django.shortcuts import redirect
 from django.http import request
 from django.shortcuts import render
-from accounts.models import ScheduleAppointment
+from accounts.models import ScheduleAppointment, VisitorIP
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.shortcuts import render
@@ -71,6 +71,8 @@ def admin_dashboard(request):
         .order_by('year', 'month')
     )
 
+
+    website_visitors = VisitorIP.objects.count()
     # Add month names (e.g. 1 → January)
     for entry in monthly_data:
         entry['month_name'] = calendar.month_name[entry['month']]
@@ -98,6 +100,7 @@ def admin_dashboard(request):
         'monthly_data': monthly_data,
         'age_groups': age_groups,
         'visit_reason_group': visit_reason_group,
+        'website_visitors':website_visitors,
     }
 
     return render(request, 'executive/executive.html', context)
@@ -211,3 +214,23 @@ def yearly_patients(request, year):
 from django.db.models import Count, Case, When, IntegerField
 from django.utils import timezone
 from datetime import date
+
+
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def role_redirect(request):
+    user = request.user
+
+    if user.is_superuser or user.role == "admin":
+        return redirect('admin_dashboard')
+
+    # For reception, doctor, nurse, patient etc
+    return redirect('home')
+
+@role_required(allowed_roles=['admin'])
+@login_required
+def executivehome(request):
+    return render(request, 'executive.html')
+

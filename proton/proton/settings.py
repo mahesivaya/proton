@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-5#m)duvr=v$e%1lv9c8i59in9+w4e&f!624hl$&mtho!xk=gvq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['avariadic.com', 'www.avariadic.com']
+ALLOWED_HOSTS = ['avariadic.com', 'www.avariadic.com', '127.0.0.1']
 
 # Application definition
 
@@ -57,12 +57,18 @@ MIDDLEWARE = [
 ]
 
 
+MIDDLEWARE += [
+    "proton.middleware.visitor_middleware.VisitorCountMiddleware",
+]
+
+
 CSRF_TRUSTED_ORIGINS = [
     'http://avariadic.com',
     'https://avariadic.com',
 ]
 
 ROOT_URLCONF = 'proton.urls'
+LOGIN_REDIRECT_URL = 'role_redirect'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -84,7 +90,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'proton.wsgi.application'
 
 
-ASGI_APPLICATION = "protonproj.asgi.application"
+ASGI_APPLICATION = "proton.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {

@@ -179,3 +179,26 @@ class PatientImage(models.Model):
     def __str__(self):
         return f"Image for {self.patient.patient_id} ({self.uploaded_at.strftime('%Y-%m-%d %H:%M')})"
 
+
+
+
+
+from django.db import models
+
+class VisitorIP(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.ip_address
+
+
+
+
+
+
+
+
+
+
+
