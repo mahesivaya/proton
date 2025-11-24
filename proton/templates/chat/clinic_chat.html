@@ -7,14 +7,14 @@
     <!-- LEFT SIDEBAR -->
     <div class="chat-sidebar">
 
-        <h3>Rooms</h3>
+        <h3>Create Room</h3>
 
         <!-- Create New Room -->
         <div class="create-room-box">
             <input id="new-room-name" type="text" placeholder="Room name" />
             <button onclick="createRoom()">+</button>
         </div>
-
+        <h3>Rooms</h3>
         <!-- Room list -->
         <div id="room-list"></div>
 
@@ -49,18 +49,19 @@
 <style>
     .chat-layout {
         display: flex;
-        max-width: 900px;
+        height: calc(100vh - 160px);
+        max-width: 1200px;
         margin: 20px auto;
         gap: 20px;
     }
 
     .chat-sidebar {
-        width: 220px;
+        width: 260px;
         background: white;
         border-radius: 8px;
         padding: 12px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        height: 520px;
+        height: 100%;
         overflow-y: auto;
     }
 
@@ -94,28 +95,18 @@
         border-radius: 6px;
     }
 
-    .room-item {
+    .room-item,
+    .user-item {
         background: #eef2ff;
         padding: 8px;
         border-radius: 6px;
-        margin-bottom: 5px;
-        cursor: pointer;
-    }
-
-    .room-item:hover {
-        background: #d0dcff;
-    }
-
-    .user-item {
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
         margin-bottom: 6px;
-        background: #eef2ff;
+        cursor: pointer;
     }
 
+    .room-item:hover,
     .user-item:hover {
-        background: #d4dcff;
+        background: #d0dcff;
     }
 
     .chat-wrapper {
@@ -124,12 +115,14 @@
         background: #fff;
         border-radius: 8px;
         box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .chat-title {
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
         font-size: 22px;
         font-weight: bold;
         color: #333;
@@ -138,7 +131,7 @@
     .chat-box {
         border: 1px solid #ccc;
         padding: 12px;
-        height: 400px;
+        flex: 1;
         overflow-y: auto;
         background: #f5f7fb;
         border-radius: 6px;
