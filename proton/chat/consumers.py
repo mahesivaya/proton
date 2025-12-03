@@ -4,15 +4,13 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from .models import Room, Message, DirectMessage
+from .views import active_rooms
 
 User = get_user_model()
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    """
-    Public clinic room chat: ws://.../ws/chat/<room_name>/
-    """
-
+    
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
@@ -21,11 +19,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.is_anonymous:
             await self.close()
             return
-
+        active_rooms.setdefault(self.room_name, set()).add(self.user.username)
+        await self.add_user_to_room(self.room_name, self.user)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
+        if self.room_name in active_rooms and self.user.username in active_rooms[self.room_name]:
+            active_rooms[self.room_name].remove(self.user.username)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -60,6 +61,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, room_name, user, message):
         room, _ = Room.objects.get_or_create(name=room_name)
         Message.objects.create(room=room, user=user, content=message)
+
+    @sync_to_async
+    def add_user_to_room(self, room_name, user):
+        room, _ = Room.objects.get_or_create(name=room_name)
+        room.users.add(user)
+
+    @sync_to_async
+    def remove_user_from_room(self, room_name, user):
+        try:
+            room = Room.objects.get(name=room_name)
+            room.users.remove(user)
+        except Room.DoesNotExist:
+            pass
 
 
 class DMConsumer(AsyncWebsocketConsumer):
