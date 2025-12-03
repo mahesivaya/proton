@@ -110,10 +110,10 @@ from channels.auth import AuthMiddlewareStack
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'protondb',                          # same as RDS DB name
-        'USER': 'maheshproton',                        # RDS username
-        'PASSWORD': 'MaheshG1990',                # RDS password
-        'HOST': 'localhost',  # RDS endpoint
+        'NAME': 'awsprotondb',                          # same as RDS DB name
+        'USER': 'postgres',                        # RDS username
+        'PASSWORD': 'postgres',                # RDS password
+        'HOST': 'protoninstance.c12uyc8448br.us-east-1.rds.amazonaws.com',  # RDS endpoint
         'PORT': '5432',
     }
 }

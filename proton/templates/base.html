@@ -7,7 +7,6 @@
   <title>{% block title %}Aura Skin Clinic{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <script defer src="{% static 'js/main.js' %}"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -23,11 +22,6 @@
 
       <!-- Navigation Links (desktop) -->
       <div class="hidden md:flex items-center space-x-6">
-	{% if user.is_authenticated%}
-        <a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
-	{% else %}
-	<a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
-	{% endif %}
 	{% if user.is_authenticated%}
         <a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
 	{% else %}
@@ -66,12 +60,6 @@
     <!-- Mobile Dropdown Menu -->
     <div id="mobile-menu" class="hidden md:hidden bg-blue-600">
       <nav class="flex flex-col items-center space-y-3 py-4 text-white font-medium">
-	 {% if user.is_authenticated%}
-        	<a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
-        {% else %}
-        	<a href="{% url 'home' %}" class="hover:text-gray-300">Home</a>
-        {% endif %}
-	<a href="{% url 'about' %}" class="hover:text-gray-300">About Us</a>
 	 {% if user.is_authenticated%}
         	<a href="{% url 'redirect_to_home' %}" class="hover:text-gray-300">🏠 Main Dashboard</a>
         {% else %}

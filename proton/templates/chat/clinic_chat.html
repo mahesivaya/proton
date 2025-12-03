@@ -290,8 +290,8 @@
     
             const wsUrl =
                 activeMode === "room"
-                    ? `${scheme}://${window.location.hostname}:9000/ws/chat/${activeTarget}/`
-                    : `${scheme}://${window.location.hostname}:9000/ws/dm/${activeTarget}/`;
+                    ? `${scheme}://${window.location.hostname}/ws/chat/${activeTarget}/`
+                    : `${scheme}://${window.location.hostname}/ws/dm/${activeTarget}/`;
     
             chatSocket = new WebSocket(wsUrl);
     
@@ -431,3 +431,4 @@
     
 
 {% endblock %}
+
