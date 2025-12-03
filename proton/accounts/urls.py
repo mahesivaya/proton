@@ -25,5 +25,7 @@ urlpatterns = [
     path('treatment/', views.treatment, name='treatment'),
     path('contact/', views.contact, name='contact'),
     path('appointment/', views.appointment, name='appointment'),
-    path('jwt_login/', views.Home.as_view()),
+    path('jwt_login/', views.Home.as_view(), name='jwt_login'),
+    path("send-email-form/", views.send_email_form, name="send_email_form"),
+    path("send_welcome_email/", views.send_welcome_email, name="send_welcome_email"),
 ]

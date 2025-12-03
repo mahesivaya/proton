@@ -5,6 +5,8 @@ from django.conf import settings
 
 class Room(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="created_rooms")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="rooms_joined", blank=True)
 
     def __str__(self):
         return self.name

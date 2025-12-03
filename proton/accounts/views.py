@@ -193,3 +193,51 @@ def register_view(request):
         return redirect("login")
 
     return render(request, "accounts/register.html")
+
+# In your views.py, or wherever you need to send emails
+# from django.views.decorators.csrf import csrf_exempt
+# from django.http import JsonResponse
+# from django.core.mail import send_mail
+# from django.conf import settings
+
+# @csrf_exempt
+# def send_welcome_email(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+#     recipient_email = request.POST.get('email')
+#     if not recipient_email:
+#         return JsonResponse({"error": "Email required"}, status=400)
+
+#     subject = "Welcome to our service!"
+#     message = "Thank you for registering. We're glad to have you."
+#     from_email = settings.EMAIL_HOST_USER
+
+#     send_mail(subject, message, from_email, [recipient_email], fail_silently=False)
+
+#     return JsonResponse({"success": True, "sent_to": recipient_email})
+
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.conf import settings
+
+def send_welcome_email(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    recipient_email = request.POST.get("email")
+
+    send_mail(
+        "Welcome!",
+        "Thank you for registering!",
+        settings.EMAIL_HOST_USER,
+        [recipient_email],
+        fail_silently=False,
+    )
+
+    return JsonResponse({"success": True, "sent_to": recipient_email})
+
+
+def send_email_form(request):
+    return render(request, "accounts/email.html")
